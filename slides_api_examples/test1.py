@@ -69,15 +69,132 @@ def create_presentation(title: str = f"Presentation {datetime.datetime.now()}"):
 
 def create_slide():
     requests = [
-                {
-                "createSlide": {
-                    "objectId": "MyNewSlide",
-                    "slideLayoutReference": {
-                    "predefinedLayout": "TITLE_AND_BODY"
+                    {
+                    "createSlide": {
+                        "objectId": "PenguinSlide",
+                        "slideLayoutReference": {
+                        "predefinedLayout": "TITLE_AND_BODY"
+                        },
+                        "placeholderIdMappings": [
+                        {
+                            "objectId": "PenguinTitle",
+                            "layoutPlaceholder": {
+                            "type": "TITLE",
+                            "index": 0
+                            }
+                        },
+                        {
+                            "objectId": "PenguinBody",
+                            "layoutPlaceholder": {
+                            "type": "BODY",
+                            "index": 0
+                            }
+                        }
+                        ]
                     }
-                },
-                }
-            ]
+                    },
+                    {
+                    "insertText": {
+                        "objectId": "PenguinTitle",
+                        "text": "The Wondrous World of Penguins"
+                    }
+                    },
+                    {
+                    "updateTextStyle": {
+                        "objectId": "PenguinTitle",
+                        "textRange": {
+                        "type": "ALL"
+                        },
+                        "style": {
+                        "fontSize": {
+                            "magnitude": 48,
+                            "unit": "PT"
+                        },
+                        "bold": True
+                        },
+                        "fields": "fontSize,bold"
+                    }
+                    },
+                    {
+                    "insertText": {
+                        "objectId": "PenguinBody",
+                        "text": "- Flightless birds adapted for swimming\n- Found mostly in the Southern Hemisphere\n- Excellent divers and swimmers\n- Have dense feathers for insulation\n- Live in large colonies"
+                    }
+                    },
+                    {
+                        "createParagraphBullets": {
+                            "objectId": "PenguinBody",
+                            "textRange": {
+                            "type": "ALL"
+                            },
+                            "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"
+                        }
+                    },
+                    {
+                    "createShape": {
+                        "objectId": "PenguinShape",
+                        "shapeType": "ELLIPSE",
+                        "elementProperties": {
+                        "pageObjectId": "PenguinSlide",
+                        "size": {
+                            "height": {
+                            "magnitude": 300,
+                            "unit": "PT"
+                            },
+                            "width": {
+                            "magnitude": 200,
+                            "unit": "PT"
+                            }
+                        },
+                        "transform": {
+                            "scaleX": 1,
+                            "scaleY": 1,
+                            "translateX": 400, 
+                            "translateY": 150,
+                            "unit": "PT"
+                        }
+                        }
+                    }
+                    },
+                    {
+                    "updateShapeProperties": {
+                        "objectId": "PenguinShape",
+                        "shapeProperties": {
+                        "shapeBackgroundFill": {
+                            "solidFill": {
+                            "color": {
+                                "rgbColor": {
+                                "red": 0.0,
+                                "green": 0.0,
+                                "blue": 1.0
+                                }
+                            }
+                            }
+                        }
+                        },
+                        "fields": "shapeBackgroundFill.solidFill.color"
+                    }
+                    },
+                    {
+                    "updatePageProperties": {
+                        "objectId": "PenguinSlide",
+                        "pageProperties": {
+                        "pageBackgroundFill": {
+                            "solidFill": {
+                            "color": {
+                                "rgbColor": {
+                                "red": 0.0,
+                                "green": 0.5,
+                                "blue": 0.0 
+                                }
+                            }
+                            }
+                        }
+                        },
+                        "fields": "pageBackgroundFill.solidFill.color"
+                    }
+                    }
+                ]
 
 
     # If you wish to populate the slide with elements,
