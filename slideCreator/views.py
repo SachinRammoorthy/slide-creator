@@ -1,6 +1,8 @@
 import flask
 import slideCreator
 
+import datetime
+
 import google.generativeai as genai
 import os
 
@@ -72,7 +74,7 @@ def create_presentation(title: str):
 
 def create_slide():
     """
-    creates a blank slide on the presentation object PRESENTATION previously created.
+    creates a blank slide
     """
     
     if not PRESENTATION:
@@ -83,17 +85,190 @@ def create_slide():
         service = build("slides", "v1", credentials=CREDS)
         # Add a slide at index 1 using the predefined
         # 'TITLE_AND_TWO_COLUMNS' layout and the ID page_id.
+        # requests = [
+        #     {
+        #         "createSlide": {
+        #             "objectId": "ABCDFE",
+        #             "insertionIndex": "1",
+        #             "slideLayoutReference": {
+        #                 "predefinedLayout": "TITLE_AND_TWO_COLUMNS"
+        #             },
+        #         }
+        #     },
+        # ]
+
+        # requests = [
+        #             {
+        #             "createSlide": {
+        #                 "objectId": "MyBlueSlide",
+        #                 "slideLayoutReference": {
+        #                 "predefinedLayout": "TITLE_AND_BODY" 
+        #                 },
+        #                 "placeholderIdMappings": [ 
+        #                 {
+        #                     "objectId": "TitlePlaceholder", 
+        #                     "layoutPlaceholder": {
+        #                     "type": "TITLE",
+        #                     "index": 0 
+        #                     }
+        #                 }
+        #                 ]
+        #             }
+        #             },
+        #             {
+        #             "updatePageProperties": {
+        #                 "objectId": "MyBlueSlide",
+        #                 "pageProperties": {
+        #                 "pageBackgroundFill": {
+        #                     "solidFill": {
+        #                     "color": {
+        #                         "rgbColor": {
+        #                         "blue": 1.0
+        #                         }
+        #                     }
+        #                     }
+        #                 }
+        #                 },
+        #                 "fields": "pageBackgroundFill.solidFill.color"
+        #             }
+        #             },
+        #             {
+        #             "insertText": {
+        #                 "objectId": "TitlePlaceholder", 
+        #                 "text": "Hey cutie",
+        #                 "insertionIndex": 0 
+        #             }
+        #             }
+        #         ]
+
         requests = [
-            {
-                "createSlide": {
-                    "objectId": "ABCDFE",
-                    "insertionIndex": "1",
-                    "slideLayoutReference": {
-                        "predefinedLayout": "TITLE_AND_TWO_COLUMNS"
+                    {
+                    "createSlide": {
+                        "objectId": "PenguinSlide",
+                        "slideLayoutReference": {
+                        "predefinedLayout": "TITLE_AND_BODY"
+                        },
+                        "placeholderIdMappings": [
+                        {
+                            "objectId": "PenguinTitle",
+                            "layoutPlaceholder": {
+                            "type": "TITLE",
+                            "index": 0
+                            }
+                        },
+                        {
+                            "objectId": "PenguinBody",
+                            "layoutPlaceholder": {
+                            "type": "BODY",
+                            "index": 0
+                            }
+                        }
+                        ]
+                    }
                     },
-                }
-            },
-        ]
+                    {
+                    "insertText": {
+                        "objectId": "PenguinTitle",
+                        "text": "The Wondrous World of Penguins"
+                    }
+                    },
+                    {
+                    "updateTextStyle": {
+                        "objectId": "PenguinTitle",
+                        "textRange": {
+                        "type": "ALL"
+                        },
+                        "style": {
+                        "fontSize": {
+                            "magnitude": 48,
+                            "unit": "PT"
+                        },
+                        "bold": True
+                        },
+                        "fields": "fontSize,bold"
+                    }
+                    },
+                    {
+                    "insertText": {
+                        "objectId": "PenguinBody",
+                        "text": "- Flightless birds adapted for swimming\n- Found mostly in the Southern Hemisphere\n- Excellent divers and swimmers\n- Have dense feathers for insulation\n- Live in large colonies"
+                    }
+                    },
+                    {
+                        "createParagraphBullets": {
+                            "objectId": "PenguinBody",
+                            "textRange": {
+                            "type": "ALL"
+                            },
+                            "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"
+                        }
+                    },
+                    {
+                    "createShape": {
+                        "objectId": "PenguinShape",
+                        "shapeType": "ELLIPSE",
+                        "elementProperties": {
+                        "pageObjectId": "PenguinSlide",
+                        "size": {
+                            "height": {
+                            "magnitude": 300,
+                            "unit": "PT"
+                            },
+                            "width": {
+                            "magnitude": 200,
+                            "unit": "PT"
+                            }
+                        },
+                        "transform": {
+                            "scaleX": 1,
+                            "scaleY": 1,
+                            "translateX": 400, 
+                            "translateY": 150,
+                            "unit": "PT"
+                        }
+                        }
+                    }
+                    },
+                    {
+                    "updateShapeProperties": {
+                        "objectId": "PenguinShape",
+                        "shapeProperties": {
+                        "shapeBackgroundFill": {
+                            "solidFill": {
+                            "color": {
+                                "rgbColor": {
+                                "red": 0.0,
+                                "green": 0.0,
+                                "blue": 1.0
+                                }
+                            }
+                            }
+                        }
+                        },
+                        "fields": "shapeBackgroundFill.solidFill.color"
+                    }
+                    },
+                    {
+                    "updatePageProperties": {
+                        "objectId": "PenguinSlide",
+                        "pageProperties": {
+                        "pageBackgroundFill": {
+                            "solidFill": {
+                            "color": {
+                                "rgbColor": {
+                                "red": 0.0,
+                                "green": 0.5,
+                                "blue": 0.0 
+                                }
+                            }
+                            }
+                        }
+                        },
+                        "fields": "pageBackgroundFill.solidFill.color"
+                    }
+                    }
+                ]
+
 
         # If you wish to populate the slide with elements,
         # add element create requests here, using the page_id.
@@ -116,19 +291,16 @@ def create_slide():
 
 # Gemini config
 genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
-model = genai.GenerativeModel('gemini-1.5-pro-latest', tools=[create_presentation, create_slide])
+model = genai.GenerativeModel('gemini-1.5-pro-latest', tools=[create_slide])
 
 @slideCreator.app.route('/')
 def show_index():
 
     # Initialize service by authenticating user
     _initialize()
-
-    # response = model.generate_content("New Delhi is in the country of")
+    create_presentation(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     chat = model.start_chat(enable_automatic_function_calling=True)
+    response = chat.send_message(f'Can you create a blank slide?')
 
-    response = chat.send_message('Can you create a google slides presentation called Random Pres?')
-    response2 = chat.send_message('Can you create a blank slide on the same presentation?')
-
-    context = { "some_text": response2.text }
+    context = { "some_text": response.text }
     return flask.render_template("index.html", **context)
