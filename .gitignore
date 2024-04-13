@@ -2,4 +2,4 @@ env/
 .DS_Store
 slideCreator.egg-info/
 .env
-
+credentials.json
