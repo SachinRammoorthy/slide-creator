@@ -3,3 +3,4 @@ env/
 slideCreator.egg-info/
 .env
 credentials.json
+token.json
