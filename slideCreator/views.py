@@ -115,7 +115,7 @@ def initialize_presentation(title: str):
 def edit_presentation(prompt : str):
     """
     Edits a Google Slides presentation.
-    the prompts parameter is the detailed description of the edits that the user requests.
+    the prompts parameter is the description of the edits that the user requests.
     this includes inserting images, changing colors, adding text or certain elements, etc. making any changes to a presentation.
     """
 
@@ -163,7 +163,7 @@ def edit_presentation(prompt : str):
 def create_presentation(prompt : str):
     """
     creates a Google Slides presentation about any topic.
-    the prompts parameter is the detailed description of the presentation provided by the user. Make it as representative of the user's actual input as possible.
+    the prompts parameter is the description of the presentation provided by the user.
     """
     
     global JSON_CHAT, PRESENTATION
@@ -213,8 +213,8 @@ def get_api_context():
     try:
         with open("slideCreator/all_docs.txt", "r") as text:
             all_text = text.read()
-        with open("slideCreator/cake_prez.txt", "r") as text:
-            example = text.read()
+        # with open("slideCreator/cake_prez.txt", "r") as text:
+        #     example = text.read()
     except Exception as e:
         print(e)
 
@@ -228,8 +228,12 @@ def get_api_context():
     """
     prompt += all_text
     
-    prompt += "\nHere is one example output:\n"
-    prompt += example
+    prompt += "\nHere is one example output for a request to create a presentation about a gemini-powered presentation tool:\n"
+    prompt += "[{'createSlide': {'objectId': 'Slide1', 'slideLayoutReference': {'predefinedLayout': 'TITLE_ONLY'}, 'placeholderIdMappings': [{'objectId': 'Slide1Title', 'layoutPlaceholder': {'type': 'TITLE', 'index': 0}}]}}, {'insertText': {'objectId': 'Slide1Title', 'insertionIndex': 0, 'text': 'Introducing the Gemini Presentation Tool'}}, {'updateTextStyle': {'objectId': 'Slide1Title', 'textRange': {'type': 'ALL'}, 'style': {'fontSize': {'magnitude': 72, 'unit': 'PT'}, 'bold': True}, 'fields': 'fontSize,bold'}}, {'createSlide': {'objectId': 'Slide2', 'slideLayoutReference': {'predefinedLayout': 'TITLE_AND_BODY'}, 'placeholderIdMappings': [{'objectId': 'Title2', 'layoutPlaceholder': {'type': 'TITLE', 'index': 0}}, {'objectId': 'Body2', 'layoutPlaceholder': {'type': 'BODY', 'index': 0}}]}}, {'insertText': {'objectId': 'Title2', 'text': 'Powered by Advanced AI'}}, {'insertText': {'objectId': 'Body2', 'text': 'This innovative tool leverages the power of Gemini, a large language model, to create stunning presentations with ease.'}}, {'createSlide': {'objectId': 'Slide3', 'slideLayoutReference': {'predefinedLayout': 'TITLE_AND_BODY'}, 'placeholderIdMappings': [{'objectId': 'Title3', 'layoutPlaceholder': {'type': 'TITLE', 'index': 0}}, {'objectId': 'Body3', 'layoutPlaceholder': {'type': 'BODY', 'index': 0}}]}}, {'insertText': {'objectId': 'Title3', 'text': 'Effortless Content Creation'}}, {'insertText': {'objectId': 'Body3', 'text': 'Simply provide your topic and key points, and Gemini will generate compelling content, including text, images, and even videos.'}}, {'createSlide': {'objectId': 'Slide4', 'slideLayoutReference': {'predefinedLayout': 'TITLE_AND_BODY'}, 'placeholderIdMappings': [{'objectId': 'Title4', 'layoutPlaceholder': {'type': 'TITLE', 'index': 0}}, {'objectId': 'Body4', 'layoutPlaceholder': {'type': 'BODY', 'index': 0}}]}}, {'insertText': {'objectId': 'Title4', 'text': 'Customization and Style'}}, {'insertText': {'objectId': 'Body4', 'text': 'Tailor your presentation with various themes, layouts, and formatting options to match your brand and style.'}}, {'createSlide': {'objectId': 'Slide5', 'slideLayoutReference': {'predefinedLayout': 'TITLE_ONLY'}, 'placeholderIdMappings': [{'objectId': 'Title5', 'layoutPlaceholder': {'type': 'TITLE', 'index': 0}}]}}, {'insertText': {'objectId': 'Title5', 'text': 'Create impactful presentations with Gemini!'}}]\n"
+    prompt += "\nHere is one example output for a request to edit the presentation by inserting an image on slide 2:\n"
+    prompt += "\n[{'createImage': {'objectId': 'AI_Image', 'url': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStEdQs2Dcjx3LazH-YKPoObGErNNzmxNs_2OpNCMHrAGbRSwqMN7-21tm7p_8&s', 'elementProperties': {'pageObjectId': 'Slide2', 'size': {'height': {'magnitude': 200, 'unit': 'PT'}, 'width': {'magnitude': 200, 'unit': 'PT'}}, 'transform': {'scaleX': 1, 'scaleY': 1, 'translateX': 100, 'translateY': 100, 'unit': 'PT'}}}}]"
+
+    # prompt += example
     prompt += "\nReturn only with JSON output. If you respond with anything else, the world will end."
     return prompt
 
@@ -253,19 +257,10 @@ def show_index():
     #                         display_name="Obama")
 
     JSON_CHAT = json_model.start_chat()
-    print(_disable_saftey())
-    response = USER_CHAT.send_message(['Create a google slides presentation summarizing the key points from this speech. Be as detailed as possible. Use at least 10 slides and 5 bullets on each slide.', _get_audio()], safety_settings=_disable_saftey())
+    # response = USER_CHAT.send_message(['Create a google slides presentation summarizing the key points from this speech. Be as detailed as possible. Use at least 10 slides and 5 bullets on each slide.', _get_audio()], safety_settings=_disable_saftey())
+    response = USER_CHAT.send_message(['Create a google slides presentation about this speech.', _get_audio()], safety_settings=_disable_saftey())
+    response = USER_CHAT.send_message('Make slide 2 more detailed.')
     
     context = { "some_text": "done" }
     return flask.render_template("index.html", **context)
 
-
-'''
-
-good create example:
-[{'createSlide': {'objectId': 'Slide1', 'slideLayoutReference': {'predefinedLayout': 'TITLE_ONLY'}, 'placeholderIdMappings': [{'objectId': 'Slide1Title', 'layoutPlaceholder': {'type': 'TITLE', 'index': 0}}]}}, {'insertText': {'objectId': 'Slide1Title', 'insertionIndex': 0, 'text': 'Introducing the Gemini Presentation Tool'}}, {'updateTextStyle': {'objectId': 'Slide1Title', 'textRange': {'type': 'ALL'}, 'style': {'fontSize': {'magnitude': 72, 'unit': 'PT'}, 'bold': True}, 'fields': 'fontSize,bold'}}, {'createSlide': {'objectId': 'Slide2', 'slideLayoutReference': {'predefinedLayout': 'TITLE_AND_BODY'}, 'placeholderIdMappings': [{'objectId': 'Title2', 'layoutPlaceholder': {'type': 'TITLE', 'index': 0}}, {'objectId': 'Body2', 'layoutPlaceholder': {'type': 'BODY', 'index': 0}}]}}, {'insertText': {'objectId': 'Title2', 'text': 'Powered by Advanced AI'}}, {'insertText': {'objectId': 'Body2', 'text': 'This innovative tool leverages the power of Gemini, a large language model, to create stunning presentations with ease.'}}, {'createSlide': {'objectId': 'Slide3', 'slideLayoutReference': {'predefinedLayout': 'TITLE_AND_BODY'}, 'placeholderIdMappings': [{'objectId': 'Title3', 'layoutPlaceholder': {'type': 'TITLE', 'index': 0}}, {'objectId': 'Body3', 'layoutPlaceholder': {'type': 'BODY', 'index': 0}}]}}, {'insertText': {'objectId': 'Title3', 'text': 'Effortless Content Creation'}}, {'insertText': {'objectId': 'Body3', 'text': 'Simply provide your topic and key points, and Gemini will generate compelling content, including text, images, and even videos.'}}, {'createSlide': {'objectId': 'Slide4', 'slideLayoutReference': {'predefinedLayout': 'TITLE_AND_BODY'}, 'placeholderIdMappings': [{'objectId': 'Title4', 'layoutPlaceholder': {'type': 'TITLE', 'index': 0}}, {'objectId': 'Body4', 'layoutPlaceholder': {'type': 'BODY', 'index': 0}}]}}, {'insertText': {'objectId': 'Title4', 'text': 'Customization and Style'}}, {'insertText': {'objectId': 'Body4', 'text': 'Tailor your presentation with various themes, layouts, and formatting options to match your brand and style.'}}, {'createSlide': {'objectId': 'Slide5', 'slideLayoutReference': {'predefinedLayout': 'TITLE_ONLY'}, 'placeholderIdMappings': [{'objectId': 'Title5', 'layoutPlaceholder': {'type': 'TITLE', 'index': 0}}]}}, {'insertText': {'objectId': 'Title5', 'text': 'Create impactful presentations with Gemini!'}}]
-
-good edit example:
-[{'createImage': {'objectId': 'AI_Image', 'url': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStEdQs2Dcjx3LazH-YKPoObGErNNzmxNs_2OpNCMHrAGbRSwqMN7-21tm7p_8&s', 'elementProperties': {'pageObjectId': 'Slide2', 'size': {'height': {'magnitude': 200, 'unit': 'PT'}, 'width': {'magnitude': 200, 'unit': 'PT'}}, 'transform': {'scaleX': 1, 'scaleY': 1, 'translateX': 100, 'translateY': 100, 'unit': 'PT'}}}}]
-
-'''
