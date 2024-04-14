@@ -1,0 +1,185 @@
+Create a presentation about George Washington that includes his early life, interests, and service in the Revolutionary War.
+
+[
+  {
+    "createSlide": {
+      "objectId": "slide1",
+      "slideLayoutReference": {
+        "predefinedLayout": "TITLE_AND_BODY"
+      },
+      "placeholderIdMappings": [
+        {
+          "objectId": "title1",
+          "layoutPlaceholder": {
+            "type": "TITLE",
+            "index": 0
+          }
+        },
+        {
+          "objectId": "body1",
+          "layoutPlaceholder": {
+            "type": "BODY",
+            "index": 0
+          }
+        }
+      ]
+    }
+  },
+  {
+    "insertText": {
+      "objectId": "title1",
+      "text": "George Washington: A Life of Service"
+    }
+  },
+  {
+    "insertText": {
+      "objectId": "body1",
+      "text": "Early Life and Interests"
+    }
+  },
+  {
+    "createSlide": {
+      "objectId": "slide2",
+      "slideLayoutReference": {
+        "predefinedLayout": "TITLE_AND_BODY"
+      },
+      "placeholderIdMappings": [
+        {
+          "objectId": "title2",
+          "layoutPlaceholder": {
+            "type": "TITLE",
+            "index": 0
+          }
+        },
+        {
+          "objectId": "body2",
+          "layoutPlaceholder": {
+            "type": "BODY",
+            "index": 0
+          }
+        }
+      ]
+    }
+  },
+  {
+    "insertText": {
+      "objectId": "title2",
+      "text": "Early Life"
+    }
+  },
+  {
+    "insertText": {
+      "objectId": "body2",
+      "text": "- Born in Westmoreland County, Virginia on February 22, 1732\n- Raised on his family's plantation\n- Received basic education but was largely self-taught\n- Developed a strong interest in surveying and military arts"
+    }
+  },
+  {
+    "createSlide": {
+      "objectId": "slide3",
+      "slideLayoutReference": {
+        "predefinedLayout": "TITLE_AND_BODY"
+      },
+      "placeholderIdMappings": [
+        {
+          "objectId": "title3",
+          "layoutPlaceholder": {
+            "type": "TITLE",
+            "index": 0
+          }
+        },
+        {
+          "objectId": "body3",
+          "layoutPlaceholder": {
+            "type": "BODY",
+            "index": 0
+          }
+        }
+      ]
+    }
+  },
+  {
+    "insertText": {
+      "objectId": "title3",
+      "text": "Interests and Pursuits"
+    }
+  },
+  {
+    "insertText": {
+      "objectId": "body3",
+      "text": "- Skilled surveyor, helping to map the Virginia frontier\n- Passionate farmer, implementing innovative agricultural practices\n- Avid fox hunter and outdoorsman\n- Devoted family man, marrying Martha Dandridge Custis"
+    }
+  }, 
+  {
+    "createSlide": {
+      "objectId": "slide4",
+      "slideLayoutReference": {
+        "predefinedLayout": "TITLE_AND_BODY"
+      },
+      "placeholderIdMappings": [
+        {
+          "objectId": "title4",
+          "layoutPlaceholder": {
+            "type": "TITLE",
+            "index": 0
+          }
+        },
+        {
+          "objectId": "body4",
+          "layoutPlaceholder": {
+            "type": "BODY",
+            "index": 0
+          }
+        }
+      ]
+    }
+  },
+  {
+    "insertText": {
+      "objectId": "title4",
+      "text": "Revolutionary War Service"
+    }
+  },
+  {
+    "insertText": {
+      "objectId": "body4",
+      "text": "- Commander-in-Chief of the Continental Army (1775-1783)\n- Led the Continental Army to victory against the British\n- Faced numerous challenges including lack of supplies, trained troops, and funding\n- Known for his strategic leadership, perseverance, and ability to inspire his troops" 
+    }
+  },
+  {
+    "createSlide": {
+      "objectId": "slide5",
+      "slideLayoutReference": {
+        "predefinedLayout": "TITLE_AND_BODY"
+      },
+      "placeholderIdMappings": [
+        {
+          "objectId": "title5",
+          "layoutPlaceholder": {
+            "type": "TITLE",
+            "index": 0
+          }
+        },
+        {
+          "objectId": "body5",
+          "layoutPlaceholder": {
+            "type": "BODY",
+            "index": 0
+          }
+        }
+      ]
+    }
+  },
+  {
+    "insertText": {
+      "objectId": "title5",
+      "text": "Legacy and Impact"
+    }
+  },
+  {
+    "insertText": {
+      "objectId": "body5",
+      "text": "- Considered the \"Father of His Country\"\n- Played a pivotal role in the founding of the United States\n- Served as the first President of the United States (1789-1797)\n- Set precedents for the presidency and American government\n- His leadership, integrity, and dedication to public service continue to inspire generations"
+    }
+  }
+]
+``

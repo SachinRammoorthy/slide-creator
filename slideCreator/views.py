@@ -8,6 +8,9 @@ import os
 
 import os.path
 
+import sys
+import json
+
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -39,13 +42,13 @@ def _initialize():
             # Save the credentials for the next run
             with open("slideCreator/token.json", "w") as token:
                 token.write(CREDS.to_json())
-    
+
     if CREDS is None:
         print("bad")
     return
 
 
-def create_presentation(title: str):
+def initialize_presentation(title: str):
     """
     creates a google slides presentation with a specific title.
     sets global variable PRESENTATION to the created presentation object that all further functions will use.
@@ -65,281 +68,55 @@ def create_presentation(title: str):
             f"Created presentation with ID:{(presentation.get('presentationId'))}"
         )
 
-        PRESENTATION = presentation        
+        request = {
+            'requests': [
+                {
+                    'deleteObject': {
+                        'objectId': presentation['slides'][0]['objectId']
+                    }
+                }
+            ]
+        }
+
+        # Execute the request to delete the slide
+        response = service.presentations().batchUpdate(
+            presentationId=presentation.get('presentationId'),
+            body=request
+        ).execute()
+
+        PRESENTATION = presentation
+        
         return
 
     except HttpError as err:
         print(err)
 
 
-def create_slide():
+def edit_presentation(prompt : str):
     """
-    creates a blank slide
+    Edits a Google Slides presentation.
+    the prompts parameter is the detailed description of the edits that the user requests.
     """
+    
+    print(prompt)
     
     if not PRESENTATION:
         print("presentation not created")
         return
+    
+    chat = json_model.start_chat()
+    response = chat.send_message(prompt)
+    requests = response.text
+
+    requests = requests.strip()
+    if requests[:7] == "```json":
+        requests = requests[7:-3]
+    requests = json.loads(requests)
+
+    print(requests)
 
     try:
         service = build("slides", "v1", credentials=CREDS)
-        
-        requests = [
-                    {
-                    "createSlide": {
-                        "objectId": "Slide1",
-                        "slideLayoutReference": {
-                        "predefinedLayout": "TITLE_ONLY"
-                        },
-                        "placeholderIdMappings": [
-                        {
-                            "objectId": "Slide1Title", 
-                            "layoutPlaceholder": {
-                            "type": "TITLE",
-                            "index": 0
-                            }
-                        }
-                        ]
-                    }
-                    },
-                    {
-                    "createImage": {
-                        "objectId": "CakeImage",
-                        "url": "https://www.nationsencyclopedia.com/photos/united-states-of-america-1087.jpg", 
-                        "elementProperties": {
-                        "pageObjectId": "Slide1",
-                        "size": {
-                            "height": {
-                            "magnitude": 400,
-                            "unit": "PT"
-                            },
-                            "width": {
-                            "magnitude": 300,
-                            "unit": "PT"
-                            }
-                        },
-                        "transform": {
-                            "scaleX": 1,
-                            "scaleY": 1,
-                            "translateX": 100,
-                            "translateY": 50, 
-                            "unit": "PT"
-                        }
-                        }
-                    }
-                    },
-                    {
-                    "insertText": {
-                        "objectId": "Slide1Title",
-                        "insertionIndex": 0,
-                        "text": "Happy Birthday!"
-                    }
-                    },
-                    {
-                    "updateTextStyle": {
-                        "objectId": "Slide1Title",
-                        "textRange": {
-                        "type": "ALL"
-                        },
-                        "style": {
-                        "fontSize": {
-                            "magnitude": 72,
-                            "unit": "PT"
-                        },
-                        "bold": "true",
-                        "foregroundColor": {
-                            "opaqueColor": {
-                            "rgbColor": {
-                                "red": 1.0,
-                                "green": 1.0,
-                                "blue": 1.0 
-                            }
-                            }
-                        }
-                        },
-                        "fields": "fontSize,bold,foregroundColor"
-                    }
-                    }, 
-                    {
-                    "updatePageProperties": {
-                        "objectId": "Slide1",
-                        "pageProperties": {
-                        "pageBackgroundFill": {
-                            "solidFill": {
-                            "color": {
-                                "rgbColor": {
-                                "red": 0.2,
-                                "green": 0.2,
-                                "blue": 0.5 
-                                }
-                            } 
-                            }
-                        }
-                        },
-                        "fields": "pageBackgroundFill.solidFill.color"
-                    }
-                    },
-                    {
-                    "createSlide": {
-                        "objectId": "Slide2",
-                        "slideLayoutReference": {
-                        "predefinedLayout": "TITLE_AND_BODY"
-                        },
-                        "placeholderIdMappings": [
-                        {
-                            "objectId": "Title2",
-                            "layoutPlaceholder": {
-                            "type": "TITLE",
-                            "index": 0
-                            }
-                        },
-                        {
-                            "objectId": "Body2",
-                            "layoutPlaceholder": {
-                            "type": "BODY",
-                            "index": 0
-                            }
-                        }
-                        ]
-                    }
-                    },
-                    {
-                    "insertText": {
-                        "objectId": "Title2",
-                        "text": "The Perfect Recipe"
-                    }
-                    },
-                    {
-                    "insertText": {
-                        "objectId": "Body2",
-                        "text": "- Flour\n- Sugar\n- Eggs\n- Butter\n- Vanilla\n- Sprinkles (lots!)" 
-                    }
-                    }, 
-                    { 
-                    "createParagraphBullets": {
-                        "objectId": "Body2",
-                        "textRange": {
-                        "type": "ALL"
-                        },
-                        "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"
-                    }
-                    },
-                    {
-                    "createSlide": {
-                        "objectId": "Slide3",
-                        "slideLayoutReference": {
-                        "predefinedLayout": "TITLE_AND_BODY"
-                        },
-                        "placeholderIdMappings": [
-                        {
-                            "objectId": "Title3",
-                            "layoutPlaceholder": {
-                            "type": "TITLE",
-                            "index": 0
-                            }
-                        },
-                        {
-                            "objectId": "Body3",
-                            "layoutPlaceholder": {
-                            "type": "BODY",
-                            "index": 0
-                            }
-                        }
-                        ] 
-                    }
-                    },
-                    {
-                    "insertText": {
-                        "objectId": "Title3",
-                        "text": "Baking with Love"
-                    }
-                    }, 
-                    {
-                    "insertText": { 
-                        "objectId": "Body3",
-                        "text": "- Preheat oven\n- Mix dry ingredients\n- Cream butter and sugar\n- Add eggs and vanilla\n- Combine wet and dry ingredients\n- Bake until golden brown"
-                    }
-                    },
-                    { 
-                    "createParagraphBullets": {
-                        "objectId": "Body3",
-                        "textRange": {
-                        "type": "ALL"
-                        },
-                        "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"
-                    }
-                    },
-                    {
-                    "createSlide": {
-                        "objectId": "Slide4", 
-                        "slideLayoutReference": { 
-                        "predefinedLayout": "TITLE_AND_BODY"
-                        },
-                        "placeholderIdMappings": [ 
-                        {
-                            "objectId": "Title4",
-                            "layoutPlaceholder": { 
-                            "type": "TITLE",
-                            "index": 0
-                            } 
-                        },
-                        {
-                            "objectId": "Body4", 
-                            "layoutPlaceholder": {
-                            "type": "BODY",
-                            "index": 0
-                            }
-                        }
-                        ]
-                    }
-                    }, 
-                    {
-                    "insertText": {
-                        "objectId": "Title4", 
-                        "text": "Decorating Delights"
-                    }
-                    }, 
-                    {
-                    "insertText": {
-                        "objectId": "Body4", 
-                        "text": "- Frosting swirls\n- Colorful sprinkles\n- Candy decorations\n- Fresh fruit toppings\n- Creative lettering"
-                    }
-                    }, 
-                    { 
-                    "createParagraphBullets": {
-                        "objectId": "Body4",
-                        "textRange": {
-                        "type": "ALL"
-                        }, 
-                        "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE" 
-                    }
-                    },
-                    {
-                    "createSlide": {
-                        "objectId": "Slide5",
-                        "slideLayoutReference": {
-                        "predefinedLayout": "TITLE_ONLY"
-                        }, 
-                        "placeholderIdMappings": [
-                        {
-                            "objectId": "Title5", 
-                            "layoutPlaceholder": {
-                            "type": "TITLE", 
-                            "index": 0
-                            }
-                        }
-                        ] 
-                    }
-                    },
-                    {
-                    "insertText": {
-                        "objectId": "Title5",
-                        "text": "Enjoy the Celebration!"
-                    }
-                    }
-                ]
-        # If you wish to populate the slide with elements,
-        # add element create requests here, using the page_id.
 
         # Execute the request.
         body = {"requests": requests}
@@ -349,7 +126,6 @@ def create_slide():
             .execute()
         )
         create_slide_response = response.get("replies")[0].get("createSlide")
-        print(f"Created slide with ID:{(create_slide_response.get('objectId'))}")
         return
         
     except HttpError as error:
@@ -357,18 +133,97 @@ def create_slide():
         print("Slides not created")
         return error
 
+
+
+def create_presentation(prompt : str):
+    """
+    creates a Google Slides presentation about any topic.
+    the prompts parameter is the detailed description of the presentation provided by the user. Make it as representative of the user's actual input as possible.
+    """
+    
+    print(prompt)
+    
+    if not PRESENTATION:
+        print("presentation not created")
+        return
+    
+    chat = json_model.start_chat()
+    response = chat.send_message(prompt)
+    requests = response.text
+
+    requests = requests.strip()
+    if requests[:7] == "```json":
+        requests = requests[7:-3]
+    requests = json.loads(requests)
+
+    print(requests)
+
+    try:
+        service = build("slides", "v1", credentials=CREDS)
+
+        # Execute the request.
+        body = {"requests": requests}
+        response = (
+            service.presentations()
+            .batchUpdate(presentationId=PRESENTATION.get('presentationId'), body=body)
+            .execute()
+        )
+        create_slide_response = response.get("replies")[0].get("createSlide")
+        # print(f"Created slide with ID:{(create_slide_response.get('objectId'))}")
+        return
+        
+    except HttpError as error:
+        print(f"An error occurred: {error}")
+        print("Slides not created")
+        return error
+    
+
+def get_api_context():
+    """Read the docs file containing the API information."""
+
+    try:
+        with open("slideCreator/all_docs.txt", "r") as text:
+            all_text = text.read()
+        with open("slideCreator/cake_prez.txt", "r") as text:
+            example = text.read()
+    except Exception as e:
+        print(e)
+
+    prompt = \
+    """
+    Below is the documentation for the Google slides API.
+    Your job is to read and understand this documentation so that you can generate a list of Request objects in json that can be used to construct a presentation using the Slides API.
+    The user will instruct you on the content of the presentation, and possibly the style and some other elements. Follow their directions to generate a request to create a presentation.
+    Here is the documentation:\n
+    """
+    prompt += all_text
+    
+    prompt += "\nHere is one example output:\n"
+    prompt += example
+    prompt += "\nReturn only with JSON output. If you respond with anything else, the world will end."
+    return prompt
+
+
 # Gemini config
 genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
-model = genai.GenerativeModel('gemini-1.5-pro-latest', tools=[create_slide])
+json_model = genai.GenerativeModel('gemini-1.5-pro-latest', system_instruction=get_api_context())
+user_model = genai.GenerativeModel('gemini-1.0-pro', tools=[create_presentation, edit_presentation])
 
 @slideCreator.app.route('/')
 def show_index():
 
     # Initialize service by authenticating user
     _initialize()
-    create_presentation(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-    chat = model.start_chat(enable_automatic_function_calling=True)
-    response = chat.send_message(f'Can you create a blank slide?')
+    initialize_presentation(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    chat = user_model.start_chat(enable_automatic_function_calling=True)
 
-    context = { "some_text": response.text }
+    # sample_file = genai.upload_file(path="slideCreator/obama.jpeg",
+    #                         display_name="Obama")
+    
+    response = chat.send_message(f'Create a google slides presentation about a gemini-powered presentation creating tool. 5 slide presentation.')
+    # response2 = chat.send_message(f'Make every slide background a different color of the rainbow.')
+    response3 = chat.send_message(f'Make the font of the entire presentation Garamond.')
+    response4 = chat.send_message(f'Swap the second and third slide.')
+    
+    context = { "some_text": response4.text }
     return flask.render_template("index.html", **context)
