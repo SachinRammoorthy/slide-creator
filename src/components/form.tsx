@@ -67,15 +67,38 @@ export default function InputForm() {
 
     const data = JSON.stringify({
       title: title,
-      styles: styles,
-      topics: topics,
+      styles: styles.map((style) => {
+        if (style.type !== "text") {
+          return {
+            type: style.type,
+            data: (style.data as File).name,
+          };
+        }
+        return style;
+      }),
+      topics: topics.map((topic) => {
+        if (topic.type !== "text") {
+          return {
+            type: topic.type,
+            data: (topic.data as File).name,
+          };
+        }
+        return topic;
+      }),
     });
 
     const request = new FormData();
     request.append("data", data);
+
     for (let i = 0; i < styles.length; i++) {
       if (styles[i].type !== "text" && styles[i].data !== null) {
-        request.append(`style${i}`, styles[i].data as File);
+        request.append((styles[i].data as File).name, styles[i].data as File);
+      }
+    }
+
+    for (let i = 0; i < topics.length; i++) {
+      if (topics[i].type !== "text" && topics[i].data !== null) {
+        request.append((topics[i].data as File).name, topics[i].data as File);
       }
     }
 
@@ -86,7 +109,7 @@ export default function InputForm() {
     };
 
     axios
-      .post("http://localhost:9329", request, config)
+      .post("http://localhost:8000/generate/", request, config)
       .then((response) => {
         console.log(response.data);
       })

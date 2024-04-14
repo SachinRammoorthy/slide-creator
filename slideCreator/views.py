@@ -247,7 +247,26 @@ user_model = genai.GenerativeModel(
 
 @slideCreator.app.route("/")
 def show_index():
+    return flask.render_template("index.html")
+
+
+@slideCreator.app.route("/generate/", methods=["POST"])
+def generate():
     global JSON_CHAT, USER_CHAT
+
+    response = {"status": "success", "message": None}
+    try:
+        print(flask.request.files)
+        files = flask.request.files
+    except:
+        response["status"] = "error"
+        response["message"] = "No files uploaded"
+        return flask.jsonify(response)
+
+    form_data = flask.request.form
+    print(form_data)
+
+    response["message"] = "Creating slides..."
 
     # Initialize service by authenticating user
     _initialize()
@@ -266,4 +285,4 @@ def show_index():
     response = USER_CHAT.send_message("Make slide 2 more detailed.")
 
     context = {"some_text": "done"}
-    return flask.render_template("index.html", **context)
+    return flask.jsonify(response)
