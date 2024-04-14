@@ -83,81 +83,118 @@ def create_slide():
 
     try:
         service = build("slides", "v1", credentials=CREDS)
-        # Add a slide at index 1 using the predefined
-        # 'TITLE_AND_TWO_COLUMNS' layout and the ID page_id.
-        # requests = [
-        #     {
-        #         "createSlide": {
-        #             "objectId": "ABCDFE",
-        #             "insertionIndex": "1",
-        #             "slideLayoutReference": {
-        #                 "predefinedLayout": "TITLE_AND_TWO_COLUMNS"
-        #             },
-        #         }
-        #     },
-        # ]
-
-        # requests = [
-        #             {
-        #             "createSlide": {
-        #                 "objectId": "MyBlueSlide",
-        #                 "slideLayoutReference": {
-        #                 "predefinedLayout": "TITLE_AND_BODY" 
-        #                 },
-        #                 "placeholderIdMappings": [ 
-        #                 {
-        #                     "objectId": "TitlePlaceholder", 
-        #                     "layoutPlaceholder": {
-        #                     "type": "TITLE",
-        #                     "index": 0 
-        #                     }
-        #                 }
-        #                 ]
-        #             }
-        #             },
-        #             {
-        #             "updatePageProperties": {
-        #                 "objectId": "MyBlueSlide",
-        #                 "pageProperties": {
-        #                 "pageBackgroundFill": {
-        #                     "solidFill": {
-        #                     "color": {
-        #                         "rgbColor": {
-        #                         "blue": 1.0
-        #                         }
-        #                     }
-        #                     }
-        #                 }
-        #                 },
-        #                 "fields": "pageBackgroundFill.solidFill.color"
-        #             }
-        #             },
-        #             {
-        #             "insertText": {
-        #                 "objectId": "TitlePlaceholder", 
-        #                 "text": "Hey cutie",
-        #                 "insertionIndex": 0 
-        #             }
-        #             }
-        #         ]
-
+        
         requests = [
                     {
                     "createSlide": {
-                        "objectId": "PenguinSlide",
+                        "objectId": "Slide1",
+                        "slideLayoutReference": {
+                        "predefinedLayout": "TITLE_ONLY"
+                        },
+                        "placeholderIdMappings": [
+                        {
+                            "objectId": "Slide1Title", 
+                            "layoutPlaceholder": {
+                            "type": "TITLE",
+                            "index": 0
+                            }
+                        }
+                        ]
+                    }
+                    },
+                    {
+                    "createImage": {
+                        "objectId": "CakeImage",
+                        "url": "https://www.nationsencyclopedia.com/photos/united-states-of-america-1087.jpg", 
+                        "elementProperties": {
+                        "pageObjectId": "Slide1",
+                        "size": {
+                            "height": {
+                            "magnitude": 400,
+                            "unit": "PT"
+                            },
+                            "width": {
+                            "magnitude": 300,
+                            "unit": "PT"
+                            }
+                        },
+                        "transform": {
+                            "scaleX": 1,
+                            "scaleY": 1,
+                            "translateX": 100,
+                            "translateY": 50, 
+                            "unit": "PT"
+                        }
+                        }
+                    }
+                    },
+                    {
+                    "insertText": {
+                        "objectId": "Slide1Title",
+                        "insertionIndex": 0,
+                        "text": "Happy Birthday!"
+                    }
+                    },
+                    {
+                    "updateTextStyle": {
+                        "objectId": "Slide1Title",
+                        "textRange": {
+                        "type": "ALL"
+                        },
+                        "style": {
+                        "fontSize": {
+                            "magnitude": 72,
+                            "unit": "PT"
+                        },
+                        "bold": "true",
+                        "foregroundColor": {
+                            "opaqueColor": {
+                            "rgbColor": {
+                                "red": 1.0,
+                                "green": 1.0,
+                                "blue": 1.0 
+                            }
+                            }
+                        }
+                        },
+                        "fields": "fontSize,bold,foregroundColor"
+                    }
+                    }, 
+                    {
+                    "updatePageProperties": {
+                        "objectId": "Slide1",
+                        "pageProperties": {
+                        "pageBackgroundFill": {
+                            "solidFill": {
+                            "color": {
+                                "rgbColor": {
+                                "red": 0.2,
+                                "green": 0.2,
+                                "blue": 0.5 
+                                }
+                            } 
+                            }
+                        }
+                        },
+                        "fields": "pageBackgroundFill.solidFill.color"
+                    }
+                    },
+                    {
+                    "createSlide": {
+                        "objectId": "Slide2",
                         "slideLayoutReference": {
                         "predefinedLayout": "TITLE_AND_BODY"
                         },
                         "placeholderIdMappings": [
                         {
-                            "objectId": "PenguinTitle",
+                            "objectId": "Title2",
                             "layoutPlaceholder": {
                             "type": "TITLE",
                             "index": 0
                             }
                         },
                         {
-                            "objectId": "PenguinBody",
+                            "objectId": "Body2",
                             "layoutPlaceholder": {
                             "type": "BODY",
                             "index": 0
@@ -168,108 +205,139 @@ def create_slide():
                     },
                     {
                     "insertText": {
-                        "objectId": "PenguinTitle",
-                        "text": "The Wondrous World of Penguins"
-                    }
-                    },
-                    {
-                    "updateTextStyle": {
-                        "objectId": "PenguinTitle",
-                        "textRange": {
-                        "type": "ALL"
-                        },
-                        "style": {
-                        "fontSize": {
-                            "magnitude": 48,
-                            "unit": "PT"
-                        },
-                        "bold": True
-                        },
-                        "fields": "fontSize,bold"
+                        "objectId": "Title2",
+                        "text": "The Perfect Recipe"
                     }
                     },
                     {
                     "insertText": {
-                        "objectId": "PenguinBody",
-                        "text": "- Flightless birds adapted for swimming\n- Found mostly in the Southern Hemisphere\n- Excellent divers and swimmers\n- Have dense feathers for insulation\n- Live in large colonies"
+                        "objectId": "Body2",
+                        "text": "- Flour\n- Sugar\n- Eggs\n- Butter\n- Vanilla\n- Sprinkles (lots!)" 
+                    }
+                    }, 
+                    { 
+                    "createParagraphBullets": {
+                        "objectId": "Body2",
+                        "textRange": {
+                        "type": "ALL"
+                        },
+                        "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"
                     }
                     },
                     {
-                        "createParagraphBullets": {
-                            "objectId": "PenguinBody",
-                            "textRange": {
-                            "type": "ALL"
-                            },
-                            "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"
-                        }
-                    },
-                    {
-                    "createShape": {
-                        "objectId": "PenguinShape",
-                        "shapeType": "ELLIPSE",
-                        "elementProperties": {
-                        "pageObjectId": "PenguinSlide",
-                        "size": {
-                            "height": {
-                            "magnitude": 300,
-                            "unit": "PT"
-                            },
-                            "width": {
-                            "magnitude": 200,
-                            "unit": "PT"
+                    "createSlide": {
+                        "objectId": "Slide3",
+                        "slideLayoutReference": {
+                        "predefinedLayout": "TITLE_AND_BODY"
+                        },
+                        "placeholderIdMappings": [
+                        {
+                            "objectId": "Title3",
+                            "layoutPlaceholder": {
+                            "type": "TITLE",
+                            "index": 0
                             }
                         },
-                        "transform": {
-                            "scaleX": 1,
-                            "scaleY": 1,
-                            "translateX": 400, 
-                            "translateY": 150,
-                            "unit": "PT"
+                        {
+                            "objectId": "Body3",
+                            "layoutPlaceholder": {
+                            "type": "BODY",
+                            "index": 0
+                            }
                         }
-                        }
+                        ] 
                     }
                     },
                     {
-                    "updateShapeProperties": {
-                        "objectId": "PenguinShape",
-                        "shapeProperties": {
-                        "shapeBackgroundFill": {
-                            "solidFill": {
-                            "color": {
-                                "rgbColor": {
-                                "red": 0.0,
-                                "green": 0.0,
-                                "blue": 1.0
-                                }
-                            }
-                            }
-                        }
+                    "insertText": {
+                        "objectId": "Title3",
+                        "text": "Baking with Love"
+                    }
+                    }, 
+                    {
+                    "insertText": { 
+                        "objectId": "Body3",
+                        "text": "- Preheat oven\n- Mix dry ingredients\n- Cream butter and sugar\n- Add eggs and vanilla\n- Combine wet and dry ingredients\n- Bake until golden brown"
+                    }
+                    },
+                    { 
+                    "createParagraphBullets": {
+                        "objectId": "Body3",
+                        "textRange": {
+                        "type": "ALL"
                         },
-                        "fields": "shapeBackgroundFill.solidFill.color"
+                        "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"
                     }
                     },
                     {
-                    "updatePageProperties": {
-                        "objectId": "PenguinSlide",
-                        "pageProperties": {
-                        "pageBackgroundFill": {
-                            "solidFill": {
-                            "color": {
-                                "rgbColor": {
-                                "red": 0.0,
-                                "green": 0.5,
-                                "blue": 0.0 
-                                }
-                            }
+                    "createSlide": {
+                        "objectId": "Slide4", 
+                        "slideLayoutReference": { 
+                        "predefinedLayout": "TITLE_AND_BODY"
+                        },
+                        "placeholderIdMappings": [ 
+                        {
+                            "objectId": "Title4",
+                            "layoutPlaceholder": { 
+                            "type": "TITLE",
+                            "index": 0
+                            } 
+                        },
+                        {
+                            "objectId": "Body4", 
+                            "layoutPlaceholder": {
+                            "type": "BODY",
+                            "index": 0
                             }
                         }
-                        },
-                        "fields": "pageBackgroundFill.solidFill.color"
+                        ]
+                    }
+                    }, 
+                    {
+                    "insertText": {
+                        "objectId": "Title4", 
+                        "text": "Decorating Delights"
+                    }
+                    }, 
+                    {
+                    "insertText": {
+                        "objectId": "Body4", 
+                        "text": "- Frosting swirls\n- Colorful sprinkles\n- Candy decorations\n- Fresh fruit toppings\n- Creative lettering"
+                    }
+                    }, 
+                    { 
+                    "createParagraphBullets": {
+                        "objectId": "Body4",
+                        "textRange": {
+                        "type": "ALL"
+                        }, 
+                        "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE" 
+                    }
+                    },
+                    {
+                    "createSlide": {
+                        "objectId": "Slide5",
+                        "slideLayoutReference": {
+                        "predefinedLayout": "TITLE_ONLY"
+                        }, 
+                        "placeholderIdMappings": [
+                        {
+                            "objectId": "Title5", 
+                            "layoutPlaceholder": {
+                            "type": "TITLE", 
+                            "index": 0
+                            }
+                        }
+                        ] 
+                    }
+                    },
+                    {
+                    "insertText": {
+                        "objectId": "Title5",
+                        "text": "Enjoy the Celebration!"
                     }
                     }
                 ]
-
-
         # If you wish to populate the slide with elements,
         # add element create requests here, using the page_id.
 

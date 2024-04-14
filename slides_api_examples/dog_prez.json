@@ -1,0 +1,231 @@
+[
+    {
+        "createSlide": {
+            "objectId": "Slide1",
+            "slideLayoutReference": {
+                "predefinedLayout": "TITLE_ONLY"
+            },
+            "placeholderIdMappings": [
+                {
+                    "objectId": "Title1",
+                    "layoutPlaceholder": {
+                        "type": "TITLE",
+                        "index": 0
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "insertText": {
+            "objectId": "Title1",
+            "text": "Man's Best Friend: Exploring the World of Dogs"
+        }
+    },
+    {
+        "updateTextStyle": {
+            "objectId": "Title1",
+            "textRange": {
+                "type": "ALL"
+            },
+            "style": {
+                "fontSize": {
+                    "magnitude": 48,
+                    "unit": "PT"
+                },
+                "bold": "true"
+            },
+            "fields": "fontSize,bold"
+        }
+    },
+    {
+        "updatePageProperties": {
+            "objectId": "Slide1",
+            "pageProperties": {
+                "pageBackgroundFill": {
+                    "solidFill": {
+                        "color": {
+                            "rgbColor": {
+                                "red": 0.8,
+                                "green": 0.5,
+                                "blue": 0.2
+                            }
+                        }
+                    }
+                }
+            },
+            "fields": "pageBackgroundFill.solidFill.color"
+        }
+    },
+    {
+        "createSlide": {
+            "objectId": "Slide2",
+            "slideLayoutReference": {
+                "predefinedLayout": "TITLE_AND_BODY"
+            },
+            "placeholderIdMappings": [
+                {
+                    "objectId": "Title2",
+                    "layoutPlaceholder": {
+                        "type": "TITLE",
+                        "index": 0
+                    }
+                },
+                {
+                    "objectId": "Body2",
+                    "layoutPlaceholder": {
+                        "type": "BODY",
+                        "index": 0
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "insertText": {
+            "objectId": "Title2",
+            "text": "A Diverse Bunch: Exploring Dog Breeds"
+        }
+    },
+    {
+        "insertText": {
+            "objectId": "Body2",
+            "text": "- Sporting Group: Retrievers, Pointers, Setters\n- Hound Group: Beagles, Greyhounds, Dachshunds\n- Working Group: Huskies, Boxers, Doberman Pinschers\n- Terrier Group: Yorkshire Terriers, Bull Terriers, Schnauzers\n- Non-Sporting Group: Bulldogs, Poodles, Dalmatians"
+        }
+    },
+    {
+        "createParagraphBullets": {
+            "objectId": "Body2",
+            "textRange": {
+                "type": "ALL"
+            },
+            "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"
+        }
+    },
+    {
+        "createSlide": {
+            "objectId": "Slide3",
+            "slideLayoutReference": {
+                "predefinedLayout": "TITLE_AND_BODY"
+            },
+            "placeholderIdMappings": [
+                {
+                    "objectId": "Title3",
+                    "layoutPlaceholder": {
+                        "type": "TITLE",
+                        "index": 0
+                    }
+                },
+                {
+                    "objectId": "Body3",
+                    "layoutPlaceholder": {
+                        "type": "BODY",
+                        "index": 0
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "insertText": {
+            "objectId": "Title3",
+            "text": "Caring for Your Canine Companion"
+        }
+    },
+    {
+        "insertText": {
+            "objectId": "Body3",
+            "text": "- Provide nutritious food and fresh water\n- Ensure regular exercise and playtime\n- Schedule veterinary checkups and vaccinations\n- Groom and bathe your dog regularly\n- Train and socialize your dog"
+        }
+    },
+    {
+        "createParagraphBullets": {
+            "objectId": "Body3",
+            "textRange": {
+                "type": "ALL"
+            },
+            "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"
+        }
+    },
+    {
+        "createSlide": {
+            "objectId": "Slide4",
+            "slideLayoutReference": {
+                "predefinedLayout": "TITLE_AND_BODY"
+            },
+            "placeholderIdMappings": [
+                {
+                    "objectId": "Title4",
+                    "layoutPlaceholder": {
+                        "type": "TITLE",
+                        "index": 0
+                    }
+                },
+                {
+                    "objectId": "Body4",
+                    "layoutPlaceholder": {
+                        "type": "BODY",
+                        "index": 0
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "insertText": {
+            "objectId": "Title4",
+            "text": "Activities and Fun with Your Dog"
+        }
+    },
+    {
+        "insertText": {
+            "objectId": "Body4",
+            "text": "- Fetch and frisbee\n- Hiking and walks\n- Agility training\n- Dog parks and socialization\n- Swimming and water games"
+        }
+    },
+    {
+        "createParagraphBullets": {
+            "objectId": "Body4",
+            "textRange": {
+                "type": "ALL"
+            },
+            "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"
+        }
+    },
+    {
+        "createSlide": {
+            "objectId": "Slide5",
+            "slideLayoutReference": {
+                "predefinedLayout": "TITLE_AND_BODY"
+            },
+            "placeholderIdMappings": [
+                {
+                    "objectId": "Title5",
+                    "layoutPlaceholder": {
+                        "type": "TITLE",
+                        "index": 0
+                    }
+                },
+                {
+                    "objectId": "Body5",
+                    "layoutPlaceholder": {
+                        "type": "BODY",
+                        "index": 0
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "insertText": {
+            "objectId": "Title5",
+            "text": "Dogs: Loyal Companions for Life"
+        }
+    },
+    {
+        "insertText": {
+            "objectId": "Body5",
+            "text": "With their unwavering loyalty, playful nature, and ability to bring joy, dogs truly are man's best friend. By understanding their needs and providing proper care, we can build strong bonds and create lasting memories with our canine companions."
+        }
+    }
+]
