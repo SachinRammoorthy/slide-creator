@@ -1,9 +1,11 @@
 import flask
+import json
 import datetime
 import slideCreator
 import time
 
 import google.generativeai as genai
+from google.generativeai.types import GenerateContentResponse
 import os
 
 import os.path
@@ -19,16 +21,32 @@ PRESENTATION_ID = None
 
 def create_presentation(title: str):
     """creates a google slides presentation with a specific title"""
-
+    global PRESENTATION_ID
     try:
         # Build the service
         service = build('slides', 'v1', credentials=CREDS)
 
         body = {"title": title}
         presentation = service.presentations().create(body=body).execute()
+        PRESENTATION_ID = presentation.get('presentationId')
         print(
             f"Created presentation with ID:{(presentation.get('presentationId'))}"
         )
+        request = {
+            'requests': [
+                {
+                    'deleteObject': {
+                        'objectId': presentation['slides'][0]['objectId']
+                    }
+                }
+            ]
+        }
+        # Execute the request to delete the slide
+        response = service.presentations().batchUpdate(
+            presentationId=presentation.get('presentationId'),
+            body=request
+        ).execute()
+
         return presentation
     except HttpError as err:
         print(err)
@@ -52,6 +70,7 @@ def get_api_context():
     The presentation object already exists, you just need to generate the list of JSON Request objects holding all the content.
 
     REMINDER: You can ONLY return JSON or the world will explode and children will burn and die.
+    NOTE: When inserting text, take care to reference the objectID of the shape or table cell, NOT the slide object because that is not allowed!
     \n
     ##################\n
     # BEGIN DOCUMENTATION\n
@@ -68,6 +87,38 @@ def get_api_context():
     """
     return prompt
 
+def _clean_gemini_json_response(resp: GenerateContentResponse):
+    """Remove the extra characters before and after the response. Return only JSON"""
+    string = resp.text
+    print("RAW string", string)
+    string = string.strip()
+    if string[:7] == "```json":
+        string = string[7:-3]
+    request_json = json.loads(string)
+    return request_json
+
+def _apply_slide_changes(resp: GenerateContentResponse):
+    """Apply the changes to the slide deck."""
+    global PRESENTATION_ID
+    json = _clean_gemini_json_response(resp)
+    print("\n\n",json,"\n\n")
+    try:
+        service = build("slides", "v1", credentials=CREDS)
+
+        # Execute the request.
+        body = {"requests": json}
+        response = (
+            service.presentations()
+            .batchUpdate(presentationId=PRESENTATION_ID, body=body)
+            .execute()
+        )
+        create_slide_response = response.get("replies")[0].get("createSlide")
+        return
+
+    except HttpError as error:
+        print(f"An error occurred: {error}")
+        print("Slides not created")
+        return error
 
 
 # Gemini config
@@ -97,8 +148,10 @@ def show_index():
     #response = call_generative_curl_request(os.environ["GOOGLE_API_KEY"], SYS_INSTRUCTION, msg, user_req)
     #print(response.json())
     response = chat.send_message([msg+user_req, obama_img])
-    print("msg one done.")
-    response = chat.send_message(f"Generate a title page for the presentation. Insert the obama image into this title page. The URL is {obama_img.uri}")
+    _apply_slide_changes(response)
+    public_obama_img = "https://upload.wikimedia.org/wikipedia/commons/8/8d/President_Barack_Obama.jpg"
+    response = chat.send_message(f"Generate a title page for the presentation. Use this link to get the public photo of Obama on the title page: {public_obama_img}.")
+    _apply_slide_changes(response)
 
     end_time = time.time()
 
