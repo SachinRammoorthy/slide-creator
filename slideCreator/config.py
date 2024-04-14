@@ -6,4 +6,4 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-APPLICATION_ROOT = '/'
+APPLICATION_ROOT = "/"
