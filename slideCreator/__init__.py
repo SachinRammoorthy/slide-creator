@@ -7,4 +7,3 @@ app = flask.Flask(__name__)
 app.config.from_object('slideCreator.config')
 
 import slideCreator.views
-import slideCreator.model

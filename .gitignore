@@ -2,5 +2,7 @@ env/
 .DS_Store
 slideCreator.egg-info/
 .env
+venv/
 credentials.json
 token.json
+*__pycache__
