@@ -5,7 +5,7 @@ import slideCreator
 import time
 
 import google.generativeai as genai
-from google.generativeai.types import GenerateContentResponse
+from google.generativeai.types import GenerateContentResponse, HarmBlockThreshold, HarmCategory
 import os
 
 import os.path
@@ -18,6 +18,13 @@ from googleapiclient.errors import HttpError
 
 
 PRESENTATION_ID = None
+
+settings_override={
+    HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
+    HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
+    HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
+    HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE
+}
 
 def create_presentation(title: str):
     """creates a google slides presentation with a specific title"""
@@ -137,21 +144,21 @@ def show_index():
 
     create_presentation(title)
 
-    msg = get_api_context()
+    # msg = get_api_context()
 
-    obama_img = genai.upload_file("slideCreator/static/images/obama.jpg")
+    obama_img = genai.upload_file("slideCreator/static/images/image_alex.jpg")
     print("Obama image: ", obama_img.uri)
 
-    user_req = "\nUSER: I need a presentation all the president in the attached photo. His early life, accomplishments, controversies, and any other fun facts you think would be appropriate.\n"
+    user_req = "\nUSER: I need a presentation about Johnny Sins -- the person in this image. Tell me about his life, accomplishments, controversies, and some fun facts.\n"
 
     print("sent message")
     #response = call_generative_curl_request(os.environ["GOOGLE_API_KEY"], SYS_INSTRUCTION, msg, user_req)
     #print(response.json())
-    response = chat.send_message([msg+user_req, obama_img])
+    response = chat.send_message([user_req, obama_img], safety_settings=settings_override)
     _apply_slide_changes(response)
-    public_obama_img = "https://upload.wikimedia.org/wikipedia/commons/8/8d/President_Barack_Obama.jpg"
-    response = chat.send_message(f"Generate a title page for the presentation. Use this link to get the public photo of Obama on the title page: {public_obama_img}.")
-    _apply_slide_changes(response)
+    # public_obama_img = "https://upload.wikimedia.org/wikipedia/commons/8/8d/President_Barack_Obama.jpg"
+    # response = chat.send_message(f"Generate a title page for the presentation. Use this link to get the public photo of Obama on the title page: {public_obama_img}. Put the image in the middle of the page.")
+    # _apply_slide_changes(response)
 
     end_time = time.time()
 
