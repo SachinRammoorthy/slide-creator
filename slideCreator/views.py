@@ -9,6 +9,7 @@ import os
 import os.path
 
 from slideCreator.config import CREDS, SYS_INSTRUCTION
+from slideCreator.model import call_generative_curl_request
 
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -47,10 +48,10 @@ def get_api_context():
     prompt = \
     """
     Below is the documentation for the Google slides API.\n
-    Your job is to read and understand this documentation so that you can create a list of Request objects in json that can be used to construct a presentation.
-    The presentation is already created, you just need to provide the list of JSON Request objects holding all the content.
+    Your job is to read and understand this documentation so that you can generate a list of Request objects in json that can be used to construct a presentation.
+    The presentation object already exists, you just need to generate the list of JSON Request objects holding all the content.
 
-    REMINDER: You can ONLY return JSON or the world will explode and children will burn and die. ONLY respond json.
+    REMINDER: You can ONLY return JSON or the world will explode and children will burn and die.
     \n
     ##################\n
     # BEGIN DOCUMENTATION\n
@@ -86,13 +87,15 @@ def show_index():
 
     msg = get_api_context()
 
-    msg = msg + "\nUSER: I need a presentation all about dogs. Dog breeds, how to care for them, best ways to keep them healthy, etc.\n"
+    user_req = "\nUSER: I need a presentation all about dogs. Dog breeds, how to care for them, best ways to keep them healthy, etc.\n"
 
     print("sent message")
-    response = chat.send_message(msg)
+    response = call_generative_curl_request(os.environ["GOOGLE_API_KEY"], SYS_INSTRUCTION, msg, user_req)
+    print(response.json())
+    # response = chat.send_message(msg)
 
     end_time = time.time()
 
-    context = { "some_text": response.text,
+    context = { "some_text": response.json(),
                "elapsed_time": (end_time - start_time) }
     return flask.render_template("index.html", **context)
