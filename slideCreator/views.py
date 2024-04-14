@@ -20,6 +20,9 @@ from googleapiclient.errors import HttpError
 
 from google.generativeai.types import HarmCategory, HarmBlockThreshold
 
+import pathlib
+import tempfile
+
 # If modifying these scopes, delete the file token.json.
 SCOPES = ["https://www.googleapis.com/auth/presentations"]
 
@@ -256,15 +259,20 @@ def generate():
 
     response = {"status": "success", "message": None}
     try:
-        print(flask.request.files)
         files = flask.request.files
     except:
         response["status"] = "error"
         response["message"] = "No files uploaded"
+        print(response)
         return flask.jsonify(response)
 
-    form_data = flask.request.form
-    print(form_data)
+    try:
+        form_data = json.loads(flask.request.form["data"])
+    except:
+        response["status"] = "error"
+        response["message"] = "No form data"
+        print(response)
+        return flask.jsonify(response)
 
     response["message"] = "Creating slides..."
 
@@ -273,16 +281,18 @@ def generate():
     initialize_presentation(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     USER_CHAT = user_model.start_chat(enable_automatic_function_calling=True)
 
-    # sample_file = genai.upload_file(path="slideCreator/obama.jpeg",
-    #                         display_name="Obama")
+    with tempfile.TemporaryDirectory() as temp_dir:
+        dirpath = pathlib.Path(temp_dir)
+        for file in files:
+            filepath = dirpath / file
+            files[file].save(filepath)
+            genai.upload_file(path=str(filepath), display_name=file)
 
     JSON_CHAT = json_model.start_chat()
-    # response = USER_CHAT.send_message(['Create a google slides presentation summarizing the key points from this speech. Be as detailed as possible. Use at least 10 slides and 5 bullets on each slide.', _get_audio()], safety_settings=_disable_saftey())
-    response = USER_CHAT.send_message(
-        ["Create a google slides presentation about this speech.", _get_audio()],
+
+    response["message"] = USER_CHAT.send_message(
+        form_data["topics"][0]["data"],
         safety_settings=_disable_saftey(),
     )
-    response = USER_CHAT.send_message("Make slide 2 more detailed.")
 
-    context = {"some_text": "done"}
     return flask.jsonify(response)
