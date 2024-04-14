@@ -20,7 +20,7 @@ export function InputField({
 }: InputFieldProps) {
   return (
     <div>
-      <label className="mt-3 " htmlFor={id}>
+      <label className="mr-3 " htmlFor={id}>
         {label}
       </label>
       <input
