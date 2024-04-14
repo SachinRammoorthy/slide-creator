@@ -1,2 +1,2 @@
 source venv/bin/activate
-flask --app slideCreator run --host 0.0.0.0 --port 8000
+flask --app slideCreator run --host 0.0.0.0 --port 8000 --with-threads
