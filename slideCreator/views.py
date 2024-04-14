@@ -69,6 +69,7 @@ def get_api_context():
     return prompt
 
 
+
 # Gemini config
 genai.configure(api_key=os.environ["GOOGLE_API_KEY"], transport='rest')
 model = genai.GenerativeModel('gemini-1.5-pro-latest',
@@ -87,15 +88,20 @@ def show_index():
 
     msg = get_api_context()
 
-    user_req = "\nUSER: I need a presentation all about dogs. Dog breeds, how to care for them, best ways to keep them healthy, etc.\n"
+    obama_img = genai.upload_file("slideCreator/static/images/obama.jpg")
+    print("Obama image: ", obama_img.uri)
+
+    user_req = "\nUSER: I need a presentation all the president in the attached photo. His early life, accomplishments, controversies, and any other fun facts you think would be appropriate.\n"
 
     print("sent message")
-    response = call_generative_curl_request(os.environ["GOOGLE_API_KEY"], SYS_INSTRUCTION, msg, user_req)
-    print(response.json())
-    # response = chat.send_message(msg)
+    #response = call_generative_curl_request(os.environ["GOOGLE_API_KEY"], SYS_INSTRUCTION, msg, user_req)
+    #print(response.json())
+    response = chat.send_message([msg+user_req, obama_img])
+    print("msg one done.")
+    response = chat.send_message(f"Generate a title page for the presentation. Insert the obama image into this title page. The URL is {obama_img.uri}")
 
     end_time = time.time()
 
-    context = { "some_text": response.json(),
+    context = { "some_text": response.text,
                "elapsed_time": (end_time - start_time) }
     return flask.render_template("index.html", **context)
