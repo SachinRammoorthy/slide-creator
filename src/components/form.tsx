@@ -7,6 +7,7 @@ export default function InputForm() {
   const [styles, setStyles] = useState<MultimodalInput[]>([]);
   const [topics, setTopics] = useState<MultimodalInput[]>([]);
   const [errors, setErrors] = useState<string[]>([]);
+  const [message, setMessage] = useState<string | null>(null);
 
   function addInput(
     array: MultimodalInput[],
@@ -56,6 +57,7 @@ export default function InputForm() {
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setMessage(null);
     setErrors([
       ...(styles
         .map((style, i) => validateMultimodalInput(`style input ${i}`, style))
@@ -108,6 +110,10 @@ export default function InputForm() {
       },
     };
 
+    setMessage(
+      "Files uploaded successfully! Check your Google Drive for your newly generated presentation"
+    );
+
     axios
       .post("http://localhost:8000/generate/", request, config)
       .then((response) => {
@@ -154,6 +160,7 @@ export default function InputForm() {
           <div key={i}>{error}</div>
         ))}
       </div>
+      {message ? <div className="text-white mt-5">{message}</div> : null}
     </div>
   );
 }

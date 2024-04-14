@@ -20,17 +20,10 @@ export function InputField({
 }: InputFieldProps) {
   return (
     <div>
-      <label className="mr-3 " htmlFor={id}>
+      <label className="mr-3 text-white" htmlFor={id}>
         {label}
       </label>
-      <input
-        className="text-black"
-        name={id}
-        id={id}
-        type={type}
-        onChange={onChange}
-        value={value}
-      />
+      <input name={id} id={id} type={type} onChange={onChange} value={value} />
     </div>
   );
 }
@@ -71,7 +64,7 @@ export function MultimodalInputField({
     } else return <div className="hidden"> </div>;
   }
   return (
-    <div id={name}>
+    <div className="grid grid-flow-col" id={name}>
       <select id={`${name}Select`} onChange={onTypeChange}>
         <option value="">~Input Type~</option>
         <option value="text">Text</option>
@@ -99,8 +92,10 @@ export default function MultimodalInputList({
   changeValue,
 }: MultimodalInputListProps) {
   return (
-    <div>
-      <h1>{name}</h1>
+    <div className="my-5">
+      <h1 className="text-white font-bold text-3xl">
+        Set {name[0].toUpperCase() + name.slice(1)} Features
+      </h1>
       {inputList.map((input: MultimodalInput, i: number) => (
         <MultimodalInputField
           key={i}
@@ -115,7 +110,11 @@ export default function MultimodalInputList({
           }}
         />
       ))}
-      <button type="button" onClick={addInput}>
+      <button
+        type="button"
+        className="text-white my-3 px-3 bg-slate-500 border-2 hover:text-white hover:bg-slate-700 border-slate-500 rounded transition:all duration-300 ease-in-out"
+        onClick={addInput}
+      >
         Add Input
       </button>
     </div>

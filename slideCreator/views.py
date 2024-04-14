@@ -293,6 +293,7 @@ def generate():
 
     JSON_CHAT = json_model.start_chat()
 
+<<<<<<< HEAD
     if file_arr:
         response["message"] = USER_CHAT.send_message(
             [form_data["topics"][0]["data"], *file_arr],
@@ -305,5 +306,11 @@ def generate():
         )
     
     # response["message"] = USER_CHAT.send_message("make slide 2 blue")
+=======
+    message = USER_CHAT.send_message(
+        form_data["topics"][0]["data"],
+        safety_settings=_disable_saftey(),
+    )
+>>>>>>> 74c0611408421b60cc79f53e8a1368a4bb945c41
 
     return {}
