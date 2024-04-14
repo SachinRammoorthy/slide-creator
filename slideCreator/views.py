@@ -18,6 +18,8 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
+from google.generativeai.types import HarmCategory, HarmBlockThreshold
+
 # If modifying these scopes, delete the file token.json.
 SCOPES = ["https://www.googleapis.com/auth/presentations"]
 
@@ -49,6 +51,21 @@ def _initialize():
     if CREDS is None:
         print("bad")
     return
+
+
+def _get_audio():
+    audio = genai.upload_file("slideCreator/MLK_Speech.mp3")
+    return audio
+
+
+def _disable_saftey():
+    to_return = {
+        HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
+        HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
+        HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
+        HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
+    }
+    return to_return
 
 
 def initialize_presentation(title: str):
@@ -143,7 +160,6 @@ def edit_presentation(prompt : str):
         return error
 
 
-
 def create_presentation(prompt : str):
     """
     creates a Google Slides presentation about any topic.
@@ -189,7 +205,7 @@ def create_presentation(prompt : str):
         print(f"An error occurred: {error}")
         print("Slides not created")
         return error
-    
+
 
 def get_api_context():
     """Read the docs file containing the API information."""
@@ -237,14 +253,8 @@ def show_index():
     #                         display_name="Obama")
 
     JSON_CHAT = json_model.start_chat()
-    
-    response = USER_CHAT.send_message(f'Create a google slides presentation about a gemini-powered presentation creating tool. 5 slide presentation.')
-    
-    time.sleep(30)
-    response3 = USER_CHAT.send_message(f'Insert this image on slide 2: {"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStEdQs2Dcjx3LazH-YKPoObGErNNzmxNs_2OpNCMHrAGbRSwqMN7-21tm7p_8&s"}')
-
-    time.sleep(30)
-    response4 = USER_CHAT.send_message(f'Swap the second and third slide.')
+    print(_disable_saftey())
+    response = USER_CHAT.send_message(['Create a google slides presentation summarizing the key points from this speech. Be as detailed as possible. Use at least 10 slides and 5 bullets on each slide.', _get_audio()], safety_settings=_disable_saftey())
     
     context = { "some_text": "done" }
     return flask.render_template("index.html", **context)
