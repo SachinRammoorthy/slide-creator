@@ -290,7 +290,7 @@ def generate():
 
     JSON_CHAT = json_model.start_chat()
 
-    response["message"] = USER_CHAT.send_message(
+    message = USER_CHAT.send_message(
         form_data["topics"][0]["data"],
         safety_settings=_disable_saftey(),
     )
