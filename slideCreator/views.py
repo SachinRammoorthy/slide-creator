@@ -276,23 +276,34 @@ def generate():
 
     response["message"] = "Creating slides..."
 
+    print(form_data)
     # Initialize service by authenticating user
     _initialize()
-    initialize_presentation(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    initialize_presentation(form_data["title"])
     USER_CHAT = user_model.start_chat(enable_automatic_function_calling=True)
 
+    file_arr = []
+    
     with tempfile.TemporaryDirectory() as temp_dir:
         dirpath = pathlib.Path(temp_dir)
         for file in files:
             filepath = dirpath / file
             files[file].save(filepath)
-            genai.upload_file(path=str(filepath), display_name=file)
+            file_arr.append(genai.upload_file(path=str(filepath), display_name=file))
 
     JSON_CHAT = json_model.start_chat()
 
-    response["message"] = USER_CHAT.send_message(
-        form_data["topics"][0]["data"],
-        safety_settings=_disable_saftey(),
-    )
+    if file_arr:
+        response["message"] = USER_CHAT.send_message(
+            [form_data["topics"][0]["data"], *file_arr],
+            safety_settings=_disable_saftey(),
+        )
+    else:
+        response["message"] = USER_CHAT.send_message(
+            form_data["topics"][0]["data"],
+            safety_settings=_disable_saftey(),
+        )
+    
+    # response["message"] = USER_CHAT.send_message("make slide 2 blue")
 
-    return flask.jsonify(response)
+    return {}
