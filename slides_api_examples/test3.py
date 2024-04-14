@@ -153,40 +153,6 @@ def create_slide():
             }
         },
         {
-            "updatePageProperties": {
-                "objectId": "CatSlide1",
-                "pageProperties": {
-                    "pageBackgroundFill": {
-                        "gradientFill": {
-                            "stops": [
-                                {
-                                    "position": 0.0,
-                                    "color": {
-                                        "rgbColor": {
-                                            "red": 1.0,
-                                            "green": 0.5,
-                                            "blue": 0.0
-                                        }
-                                    }
-                                },
-                                {
-                                    "position": 1.0,
-                                    "color": {
-                                        "rgbColor": {
-                                            "red": 1.0,
-                                            "green": 1.0,
-                                            "blue": 0.0
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                },
-                "fields": "pageBackgroundFill.gradientFill"
-            }
-        },
-        {
             "createSlide": {
                 "objectId": "CatSlide2",
                 "slideLayoutReference": {
