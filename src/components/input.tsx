@@ -20,8 +20,17 @@ export function InputField({
 }: InputFieldProps) {
   return (
     <div>
-      <label htmlFor={id}>{label}</label>
-      <input name={id} id={id} type={type} onChange={onChange} value={value} />
+      <label className="mt-3 " htmlFor={id}>
+        {label}
+      </label>
+      <input
+        className="text-black"
+        name={id}
+        id={id}
+        type={type}
+        onChange={onChange}
+        value={value}
+      />
     </div>
   );
 }
