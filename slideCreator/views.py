@@ -28,6 +28,7 @@ CREDS = None
 JSON_CHAT = None
 USER_CHAT = None
 
+
 def _initialize():
     global CREDS
     # The file token.json stores the user's access and refresh tokens, and is
@@ -79,40 +80,37 @@ def initialize_presentation(title: str):
         if CREDS is None:
             print("creds is none")
             return
-        
-        service = build('slides', 'v1', credentials=CREDS)
+
+        service = build("slides", "v1", credentials=CREDS)
 
         body = {"title": title}
         presentation = service.presentations().create(body=body).execute()
-        print(
-            f"Created presentation with ID:{(presentation.get('presentationId'))}"
-        )
+        print(f"Created presentation with ID:{(presentation.get('presentationId'))}")
 
         request = {
-            'requests': [
-                {
-                    'deleteObject': {
-                        'objectId': presentation['slides'][0]['objectId']
-                    }
-                }
+            "requests": [
+                {"deleteObject": {"objectId": presentation["slides"][0]["objectId"]}}
             ]
         }
 
         # Execute the request to delete the slide
-        response = service.presentations().batchUpdate(
-            presentationId=presentation.get('presentationId'),
-            body=request
-        ).execute()
+        response = (
+            service.presentations()
+            .batchUpdate(
+                presentationId=presentation.get("presentationId"), body=request
+            )
+            .execute()
+        )
 
         PRESENTATION = presentation
-        
+
         return
 
     except HttpError as err:
         print(err)
 
 
-def edit_presentation(prompt : str):
+def edit_presentation(prompt: str):
     """
     Edits a Google Slides presentation.
     the prompts parameter is the description of the edits that the user requests.
@@ -120,16 +118,16 @@ def edit_presentation(prompt : str):
     """
 
     # problem might be that this output is not just editing but replacing the entire thing.
-    
+
     global JSON_CHAT, PRESENTATION
 
     print("editing")
     print(prompt)
-    
+
     if not PRESENTATION:
         print("presentation not created")
         return
-    
+
     # chat = json_model.start_chat()
     response = JSON_CHAT.send_message(prompt)
     requests = response.text
@@ -148,35 +146,35 @@ def edit_presentation(prompt : str):
         body = {"requests": requests}
         response = (
             service.presentations()
-            .batchUpdate(presentationId=PRESENTATION.get('presentationId'), body=body)
+            .batchUpdate(presentationId=PRESENTATION.get("presentationId"), body=body)
             .execute()
         )
         create_slide_response = response.get("replies")[0].get("createSlide")
         return
-        
+
     except HttpError as error:
         print(f"An error occurred: {error}")
         print("Slides not created")
         return error
 
 
-def create_presentation(prompt : str):
+def create_presentation(prompt: str):
     """
     creates a Google Slides presentation about any topic.
     the prompts parameter is the description of the presentation provided by the user.
     """
-    
+
     global JSON_CHAT, PRESENTATION
 
     print("creating")
     print(prompt)
-    
+
     if not PRESENTATION:
         print("presentation not created")
         return
-    
+
     # chat = json_model.start_chat()
-    
+
     response = JSON_CHAT.send_message(prompt)
     requests = response.text
 
@@ -194,13 +192,13 @@ def create_presentation(prompt : str):
         body = {"requests": requests}
         response = (
             service.presentations()
-            .batchUpdate(presentationId=PRESENTATION.get('presentationId'), body=body)
+            .batchUpdate(presentationId=PRESENTATION.get("presentationId"), body=body)
             .execute()
         )
         create_slide_response = response.get("replies")[0].get("createSlide")
         # print(f"Created slide with ID:{(create_slide_response.get('objectId'))}")
         return
-        
+
     except HttpError as error:
         print(f"An error occurred: {error}")
         print("Slides not created")
@@ -218,8 +216,7 @@ def get_api_context():
     except Exception as e:
         print(e)
 
-    prompt = \
-    """
+    prompt = """
     Below is the documentation for the Google slides API.
     Your job is to read and understand this documentation so that you can generate a list of Request objects in json that can be used to construct a presentation using the Slides API.
     The user will instruct you on the content of the presentation, and possibly the style and some other elements. Follow their directions to generate a request to create or edit the presentation.
@@ -227,7 +224,7 @@ def get_api_context():
     Here is the documentation:\n
     """
     prompt += all_text
-    
+
     prompt += "\nHere is one example output for a request to create a presentation about a gemini-powered presentation tool:\n"
     prompt += "[{'createSlide': {'objectId': 'Slide1', 'slideLayoutReference': {'predefinedLayout': 'TITLE_ONLY'}, 'placeholderIdMappings': [{'objectId': 'Slide1Title', 'layoutPlaceholder': {'type': 'TITLE', 'index': 0}}]}}, {'insertText': {'objectId': 'Slide1Title', 'insertionIndex': 0, 'text': 'Introducing the Gemini Presentation Tool'}}, {'updateTextStyle': {'objectId': 'Slide1Title', 'textRange': {'type': 'ALL'}, 'style': {'fontSize': {'magnitude': 72, 'unit': 'PT'}, 'bold': True}, 'fields': 'fontSize,bold'}}, {'createSlide': {'objectId': 'Slide2', 'slideLayoutReference': {'predefinedLayout': 'TITLE_AND_BODY'}, 'placeholderIdMappings': [{'objectId': 'Title2', 'layoutPlaceholder': {'type': 'TITLE', 'index': 0}}, {'objectId': 'Body2', 'layoutPlaceholder': {'type': 'BODY', 'index': 0}}]}}, {'insertText': {'objectId': 'Title2', 'text': 'Powered by Advanced AI'}}, {'insertText': {'objectId': 'Body2', 'text': 'This innovative tool leverages the power of Gemini, a large language model, to create stunning presentations with ease.'}}, {'createSlide': {'objectId': 'Slide3', 'slideLayoutReference': {'predefinedLayout': 'TITLE_AND_BODY'}, 'placeholderIdMappings': [{'objectId': 'Title3', 'layoutPlaceholder': {'type': 'TITLE', 'index': 0}}, {'objectId': 'Body3', 'layoutPlaceholder': {'type': 'BODY', 'index': 0}}]}}, {'insertText': {'objectId': 'Title3', 'text': 'Effortless Content Creation'}}, {'insertText': {'objectId': 'Body3', 'text': 'Simply provide your topic and key points, and Gemini will generate compelling content, including text, images, and even videos.'}}, {'createSlide': {'objectId': 'Slide4', 'slideLayoutReference': {'predefinedLayout': 'TITLE_AND_BODY'}, 'placeholderIdMappings': [{'objectId': 'Title4', 'layoutPlaceholder': {'type': 'TITLE', 'index': 0}}, {'objectId': 'Body4', 'layoutPlaceholder': {'type': 'BODY', 'index': 0}}]}}, {'insertText': {'objectId': 'Title4', 'text': 'Customization and Style'}}, {'insertText': {'objectId': 'Body4', 'text': 'Tailor your presentation with various themes, layouts, and formatting options to match your brand and style.'}}, {'createSlide': {'objectId': 'Slide5', 'slideLayoutReference': {'predefinedLayout': 'TITLE_ONLY'}, 'placeholderIdMappings': [{'objectId': 'Title5', 'layoutPlaceholder': {'type': 'TITLE', 'index': 0}}]}}, {'insertText': {'objectId': 'Title5', 'text': 'Create impactful presentations with Gemini!'}}]\n"
     prompt += "\nHere is one example output for a request to edit the presentation by inserting an image on slide 2:\n"
@@ -240,12 +237,16 @@ def get_api_context():
 
 # Gemini config
 genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
-json_model = genai.GenerativeModel('gemini-1.5-pro-latest', system_instruction=get_api_context())
-user_model = genai.GenerativeModel('gemini-1.5-pro-latest', tools=[create_presentation, edit_presentation])
+json_model = genai.GenerativeModel(
+    "gemini-1.5-pro-latest", system_instruction=get_api_context()
+)
+user_model = genai.GenerativeModel(
+    "gemini-1.5-pro-latest", tools=[create_presentation, edit_presentation]
+)
 
-@slideCreator.app.route('/')
+
+@slideCreator.app.route("/")
 def show_index():
-
     global JSON_CHAT, USER_CHAT
 
     # Initialize service by authenticating user
@@ -258,9 +259,11 @@ def show_index():
 
     JSON_CHAT = json_model.start_chat()
     # response = USER_CHAT.send_message(['Create a google slides presentation summarizing the key points from this speech. Be as detailed as possible. Use at least 10 slides and 5 bullets on each slide.', _get_audio()], safety_settings=_disable_saftey())
-    response = USER_CHAT.send_message(['Create a google slides presentation about this speech.', _get_audio()], safety_settings=_disable_saftey())
-    response = USER_CHAT.send_message('Make slide 2 more detailed.')
-    
-    context = { "some_text": "done" }
-    return flask.render_template("index.html", **context)
+    response = USER_CHAT.send_message(
+        ["Create a google slides presentation about this speech.", _get_audio()],
+        safety_settings=_disable_saftey(),
+    )
+    response = USER_CHAT.send_message("Make slide 2 more detailed.")
 
+    context = {"some_text": "done"}
+    return flask.render_template("index.html", **context)

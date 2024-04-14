@@ -26,6 +26,7 @@ yarn-error.log*
 env/
 slideCreator.egg-info/
 .env
+__pycache__
 
 # oauth creds + token
 credentials.json

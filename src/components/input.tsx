@@ -1,6 +1,6 @@
 export interface MultimodalInput {
   type: string;
-  data: FileList | string | null;
+  data: File | string | null;
 }
 
 interface InputFieldProps {
@@ -79,7 +79,7 @@ interface MultimodalInputListProps {
   inputList: MultimodalInput[];
   addInput: () => void;
   changeType: (i: number, type: string) => void;
-  changeValue: (i: number, data: string | FileList | null) => void;
+  changeValue: (i: number, data: string | File | null) => void;
 }
 
 export default function MultimodalInputList({
@@ -101,12 +101,14 @@ export default function MultimodalInputList({
             changeType(i, e.target.value);
           }}
           onValueChange={(e, type) => {
-            const data = type === "text" ? e.target.value : e.target.files;
+            const data = type === "text" ? e.target.value : e.target.files![0];
             changeValue(i, data);
           }}
         />
       ))}
-      <button onClick={addInput}>Add Input</button>
+      <button type="button" onClick={addInput}>
+        Add Input
+      </button>
     </div>
   );
 }
