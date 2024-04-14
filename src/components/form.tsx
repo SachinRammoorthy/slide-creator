@@ -1,111 +1,40 @@
+import MultimodalInputList, { InputField, MultimodalInput } from "./input";
 import { useState } from "react";
-
-interface InputFieldProps {
-  id: string;
-  type: string;
-  value?: string;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}
-
-function InputField({ id, type, value, onChange }: InputFieldProps) {
-  return (
-    <input name={id} id={id} type={type} onChange={onChange} value={value} />
-  );
-}
-
-interface DropdownFieldProps {
-  id: string;
-  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-}
-
-function DropdownField({ id, onChange }: DropdownFieldProps) {
-  return (
-    <select name={id} id={id} onChange={onChange}>
-      <option value=""></option>
-      <option value="text">Text</option>
-      <option value="video">Video</option>
-      <option value="audio">Audio</option>
-    </select>
-  );
-}
-
-interface MultimodalInput {
-  type: string;
-  data: FileList | string | null;
-}
-
-interface MultimodalInputFieldProps {
-  id: string;
-  value: MultimodalInput;
-  onTypeChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  onValueChange: (e: React.ChangeEvent<HTMLInputElement>, t: string) => void;
-}
-
-function MultimodalInputField({
-  id,
-  value,
-  onTypeChange,
-  onValueChange,
-}: MultimodalInputFieldProps) {
-  function mapType(type: string) {
-    if (type === "text")
-      return (
-        <InputField
-          id={id}
-          type="text"
-          value={value.data as string}
-          onChange={(e) => onValueChange(e, type)}
-        />
-      );
-    else if (type === "video" || type === "audio") {
-      return (
-        <InputField
-          id={id}
-          type="file"
-          onChange={(e) => onValueChange(e, type)}
-        />
-      );
-    } else return <div className="hidden"> </div>;
-  }
-  return (
-    <div id={id}>
-      <DropdownField id={`form${id}`} onChange={onTypeChange} />
-      {mapType(value.type)}
-    </div>
-  );
-}
 
 export default function InputForm() {
   const [title, setTitle] = useState<string>("");
-  const [topic, setTopic] = useState<MultimodalInput>({ type: "", data: "" });
-  const [style, setStyle] = useState<MultimodalInput>({ type: "", data: "" });
+  const [styles, setStyles] = useState<MultimodalInput[]>([]);
+  const [topics, setTopics] = useState<MultimodalInput[]>([]);
   const [errors, setErrors] = useState<string[]>([]);
 
-  function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setTitle(e.target.value);
+  function addInput(
+    array: MultimodalInput[],
+    setArray: (array: MultimodalInput[]) => void
+  ) {
+    const copy = [...array, { type: "", data: null }];
+    setArray(copy);
   }
 
-  function handleMultimodalTypeChange(
-    e: React.ChangeEvent<HTMLSelectElement>,
-    value: MultimodalInput,
-    setter: React.Dispatch<React.SetStateAction<MultimodalInput>>
+  function changeType(
+    i: number,
+    type: string,
+    array: MultimodalInput[],
+    setArray: (array: MultimodalInput[]) => void
   ) {
-    const type = e.target.value;
-    setter({ type: type, data: "" });
+    const copy = array.slice();
+    copy[i].type = type;
+    setArray(copy);
   }
 
-  function handleMultimodalValueChange(
-    e: React.ChangeEvent<HTMLInputElement>,
-    setter: React.Dispatch<React.SetStateAction<MultimodalInput>>,
-    type: string
+  function changeValue(
+    i: number,
+    data: string | FileList | null,
+    array: MultimodalInput[],
+    setArray: (array: MultimodalInput[]) => void
   ) {
-    if (type === "text") {
-      setter({ type: type, data: e.target.value });
-    } else if (type === "video" || type === "audio") {
-      setter({ type: type, data: e.target.files! });
-    } else {
-      setter({ type: type, data: "" });
-    }
+    const copy = array.slice();
+    copy[i].data = data;
+    setArray(copy);
   }
 
   function validateMultimodalInput(name: string, value: MultimodalInput) {
@@ -124,65 +53,51 @@ export default function InputForm() {
     return null;
   }
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setErrors([]);
-
-    if (title === "") {
-      setErrors((prev) => [...prev, "Title cannot be empty"]);
-    }
-
-    const styleError = validateMultimodalInput("style", style);
-    if (styleError !== null) {
-      setErrors((prev) => [...prev, styleError]);
-    }
-    const topicError = validateMultimodalInput("topic", topic);
-    if (topicError !== null) {
-      setErrors((prev) => [...prev, topicError]);
+    setErrors([
+      ...(styles
+        .map((style, i) => validateMultimodalInput(`style input ${i}`, style))
+        .filter((error) => error === null) as string[]),
+      ...(topics
+        .map((topic, i) => validateMultimodalInput(`topic input ${i}`, topic))
+        .filter((error) => error === null) as string[]),
+    ]);
+    if (errors.length === 0) {
+      console.log({
+        title: title,
+        styles: styles,
+        topics: topics,
+      });
     }
   }
 
   return (
-    <div>
-      <form onSubmit={onSubmit}>
-        <label htmlFor="formTitle">Title</label>
-        <InputField
-          id="formTitle"
-          type="text"
-          value={title}
-          onChange={handleTitleChange}
-        />
-        <label htmlFor="style">Style</label>
-        <MultimodalInputField
-          id="style"
-          value={style}
-          onTypeChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-            handleMultimodalTypeChange(e, style, setStyle)
-          }
-          onValueChange={(
-            e: React.ChangeEvent<HTMLInputElement>,
-            type: string
-          ) => handleMultimodalValueChange(e, setStyle, type)}
-        />
-        <label htmlFor="topic">Topic</label>
-        <MultimodalInputField
-          id="topic"
-          value={topic}
-          onTypeChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-            handleMultimodalTypeChange(e, topic, setTopic)
-          }
-          onValueChange={(
-            e: React.ChangeEvent<HTMLInputElement>,
-            type: string
-          ) => handleMultimodalValueChange(e, setTopic, type)}
-        />
-        <button type="submit">Submit</button>
-      </form>
-      <div>
-        {errors.map((error) => (
-          <p key={error.split(":")[0]}>{error}</p>
-        ))}
-      </div>
-    </div>
+    <form onSubmit={handleSubmit}>
+      <InputField
+        id="title"
+        label="Title"
+        type="text"
+        value={title}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          setTitle(e.target.value)
+        }
+      />
+      <MultimodalInputList
+        name="style"
+        inputList={styles}
+        addInput={() => addInput(styles, setStyles)}
+        changeType={(i, type) => changeType(i, type, styles, setStyles)}
+        changeValue={(i, data) => changeValue(i, data, styles, setStyles)}
+      />
+      <MultimodalInputList
+        name="topic"
+        inputList={topics}
+        addInput={() => addInput(topics, setTopics)}
+        changeType={(i, type) => changeType(i, type, topics, setTopics)}
+        changeValue={(i, data) => changeValue(i, data, topics, setTopics)}
+      />
+      <input type="submit" />
+    </form>
   );
 }
