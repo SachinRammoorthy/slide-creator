@@ -2,6 +2,7 @@ import flask
 import slideCreator
 
 import datetime
+import time
 
 import google.generativeai as genai
 import os
@@ -22,6 +23,8 @@ SCOPES = ["https://www.googleapis.com/auth/presentations"]
 
 PRESENTATION = None
 CREDS = None
+JSON_CHAT = None
+USER_CHAT = None
 
 def _initialize():
     global CREDS
@@ -96,16 +99,22 @@ def edit_presentation(prompt : str):
     """
     Edits a Google Slides presentation.
     the prompts parameter is the detailed description of the edits that the user requests.
+    this includes inserting images, changing colors, adding text or certain elements, etc. making any changes to a presentation.
     """
+
+    # problem might be that this output is not just editing but replacing the entire thing.
     
+    global JSON_CHAT, PRESENTATION
+
+    print("editing")
     print(prompt)
     
     if not PRESENTATION:
         print("presentation not created")
         return
     
-    chat = json_model.start_chat()
-    response = chat.send_message(prompt)
+    # chat = json_model.start_chat()
+    response = JSON_CHAT.send_message(prompt)
     requests = response.text
 
     requests = requests.strip()
@@ -141,14 +150,18 @@ def create_presentation(prompt : str):
     the prompts parameter is the detailed description of the presentation provided by the user. Make it as representative of the user's actual input as possible.
     """
     
+    global JSON_CHAT, PRESENTATION
+
+    print("creating")
     print(prompt)
     
     if not PRESENTATION:
         print("presentation not created")
         return
     
-    chat = json_model.start_chat()
-    response = chat.send_message(prompt)
+    # chat = json_model.start_chat()
+    
+    response = JSON_CHAT.send_message(prompt)
     requests = response.text
 
     requests = requests.strip()
@@ -193,7 +206,8 @@ def get_api_context():
     """
     Below is the documentation for the Google slides API.
     Your job is to read and understand this documentation so that you can generate a list of Request objects in json that can be used to construct a presentation using the Slides API.
-    The user will instruct you on the content of the presentation, and possibly the style and some other elements. Follow their directions to generate a request to create a presentation.
+    The user will instruct you on the content of the presentation, and possibly the style and some other elements. Follow their directions to generate a request to create or edit the presentation.
+    If only an edit (such as inserting an image, text, style, etc), do not re-create the presentation -- only create requests that will update the existing slides.
     Here is the documentation:\n
     """
     prompt += all_text
@@ -207,23 +221,41 @@ def get_api_context():
 # Gemini config
 genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
 json_model = genai.GenerativeModel('gemini-1.5-pro-latest', system_instruction=get_api_context())
-user_model = genai.GenerativeModel('gemini-1.0-pro', tools=[create_presentation, edit_presentation])
+user_model = genai.GenerativeModel('gemini-1.5-pro-latest', tools=[create_presentation, edit_presentation])
 
 @slideCreator.app.route('/')
 def show_index():
 
+    global JSON_CHAT, USER_CHAT
+
     # Initialize service by authenticating user
     _initialize()
     initialize_presentation(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-    chat = user_model.start_chat(enable_automatic_function_calling=True)
+    USER_CHAT = user_model.start_chat(enable_automatic_function_calling=True)
 
     # sample_file = genai.upload_file(path="slideCreator/obama.jpeg",
     #                         display_name="Obama")
+
+    JSON_CHAT = json_model.start_chat()
     
-    response = chat.send_message(f'Create a google slides presentation about a gemini-powered presentation creating tool. 5 slide presentation.')
-    # response2 = chat.send_message(f'Make every slide background a different color of the rainbow.')
-    response3 = chat.send_message(f'Make the font of the entire presentation Garamond.')
-    response4 = chat.send_message(f'Swap the second and third slide.')
+    response = USER_CHAT.send_message(f'Create a google slides presentation about a gemini-powered presentation creating tool. 5 slide presentation.')
     
-    context = { "some_text": response4.text }
+    time.sleep(30)
+    response3 = USER_CHAT.send_message(f'Insert this image on slide 2: {"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStEdQs2Dcjx3LazH-YKPoObGErNNzmxNs_2OpNCMHrAGbRSwqMN7-21tm7p_8&s"}')
+
+    time.sleep(30)
+    response4 = USER_CHAT.send_message(f'Swap the second and third slide.')
+    
+    context = { "some_text": "done" }
     return flask.render_template("index.html", **context)
+
+
+'''
+
+good create example:
+[{'createSlide': {'objectId': 'Slide1', 'slideLayoutReference': {'predefinedLayout': 'TITLE_ONLY'}, 'placeholderIdMappings': [{'objectId': 'Slide1Title', 'layoutPlaceholder': {'type': 'TITLE', 'index': 0}}]}}, {'insertText': {'objectId': 'Slide1Title', 'insertionIndex': 0, 'text': 'Introducing the Gemini Presentation Tool'}}, {'updateTextStyle': {'objectId': 'Slide1Title', 'textRange': {'type': 'ALL'}, 'style': {'fontSize': {'magnitude': 72, 'unit': 'PT'}, 'bold': True}, 'fields': 'fontSize,bold'}}, {'createSlide': {'objectId': 'Slide2', 'slideLayoutReference': {'predefinedLayout': 'TITLE_AND_BODY'}, 'placeholderIdMappings': [{'objectId': 'Title2', 'layoutPlaceholder': {'type': 'TITLE', 'index': 0}}, {'objectId': 'Body2', 'layoutPlaceholder': {'type': 'BODY', 'index': 0}}]}}, {'insertText': {'objectId': 'Title2', 'text': 'Powered by Advanced AI'}}, {'insertText': {'objectId': 'Body2', 'text': 'This innovative tool leverages the power of Gemini, a large language model, to create stunning presentations with ease.'}}, {'createSlide': {'objectId': 'Slide3', 'slideLayoutReference': {'predefinedLayout': 'TITLE_AND_BODY'}, 'placeholderIdMappings': [{'objectId': 'Title3', 'layoutPlaceholder': {'type': 'TITLE', 'index': 0}}, {'objectId': 'Body3', 'layoutPlaceholder': {'type': 'BODY', 'index': 0}}]}}, {'insertText': {'objectId': 'Title3', 'text': 'Effortless Content Creation'}}, {'insertText': {'objectId': 'Body3', 'text': 'Simply provide your topic and key points, and Gemini will generate compelling content, including text, images, and even videos.'}}, {'createSlide': {'objectId': 'Slide4', 'slideLayoutReference': {'predefinedLayout': 'TITLE_AND_BODY'}, 'placeholderIdMappings': [{'objectId': 'Title4', 'layoutPlaceholder': {'type': 'TITLE', 'index': 0}}, {'objectId': 'Body4', 'layoutPlaceholder': {'type': 'BODY', 'index': 0}}]}}, {'insertText': {'objectId': 'Title4', 'text': 'Customization and Style'}}, {'insertText': {'objectId': 'Body4', 'text': 'Tailor your presentation with various themes, layouts, and formatting options to match your brand and style.'}}, {'createSlide': {'objectId': 'Slide5', 'slideLayoutReference': {'predefinedLayout': 'TITLE_ONLY'}, 'placeholderIdMappings': [{'objectId': 'Title5', 'layoutPlaceholder': {'type': 'TITLE', 'index': 0}}]}}, {'insertText': {'objectId': 'Title5', 'text': 'Create impactful presentations with Gemini!'}}]
+
+good edit example:
+[{'createImage': {'objectId': 'AI_Image', 'url': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStEdQs2Dcjx3LazH-YKPoObGErNNzmxNs_2OpNCMHrAGbRSwqMN7-21tm7p_8&s', 'elementProperties': {'pageObjectId': 'Slide2', 'size': {'height': {'magnitude': 200, 'unit': 'PT'}, 'width': {'magnitude': 200, 'unit': 'PT'}}, 'transform': {'scaleX': 1, 'scaleY': 1, 'translateX': 100, 'translateY': 100, 'unit': 'PT'}}}}]
+
+'''
